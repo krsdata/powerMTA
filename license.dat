@@ -1,0 +1,14 @@
+product: PowerMTA
+version: 4.5
+platform: linux-intel
+units: 4294967295
+options: H,enterprise-plus,no-passive-audit
+mac: 
+licensee: PowerMTA NiNjA
+serial: p0w3rm74n1nj4
+comment: PMTA v4.5
+issued: 2016-08-20
+expires: never
+copyright: Port25 Solutions, Inc.  All Rights Reserved
+check: 1-AZzveAgi1HmPcuBD18Iq1ol33jor2IrI2zt95mcDHAQf7wAkQ+XiBJab6eucTUIg
+RwsatRyb3xCYu0hs+wCz7w==
