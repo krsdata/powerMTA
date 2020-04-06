@@ -1,0 +1,6 @@
+# Normal PHP scripts
+location ~ \.php$ {
+    include PH_NGINX_CONF_TMPL_DIR/fastcgi_php.tmpl;
+
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+}

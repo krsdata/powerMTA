@@ -1,0 +1,206 @@
+
+  ^
+  |.-.   .-.   .-.   .-.   .  netdata
+  |   '-'   '-'   '-'   '-'   real-time performance monitoring, done right!
+  +----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--->
+
+  (C) Copyright 2017, Costa Tsaousis
+  All rights reserved
+  Released under GPL v3+
+
+  You are about to install netdata to this system.
+  netdata will be installed at:
+
+                    /opt/netdata
+
+  The following changes will be made to your system:
+
+  # USERS / GROUPS
+  User 'netdata' and group 'netdata' will be added, if not present.
+
+  # LOGROTATE
+  This file will be installed if logrotate is present.
+
+   - /etc/logrotate.d/netdata
+
+  # SYSTEM INIT
+  This file will be installed if this system runs with systemd:
+
+   - /lib/systemd/system/netdata.service
+
+   or, for older Centos, Debian/Ubuntu or OpenRC Gentoo:
+
+   - /etc/init.d/netdata         will be created
+
+
+  This package can also update a netdata installation that has been
+  created with another version of it.
+
+  Your netdata configuration will be retained.
+  After installation, netdata will be (re-)started.
+
+  netdata re-distributes a lot of open source software components.
+  Check its full license at:
+  https://github.com/netdata/netdata/blob/master/LICENSE.md
+Creating directory /opt/netdata
+Verifying archive integrity...     0%    15%    31%    47%    63%    78%    94%  100%   All good.
+Uncompressing netdata, the real-time performance and health monitoring system     0%    15%    31%    47%    63%    78%    94%  100%  
+ --- Deleting stock configuration files from user configuration directory --- 
+ --- Attempt to create user/group netdata/netadata --- 
+Group 'netdata' already exists.
+User 'netdata' already exists.
+ --- Add user netdata to required user groups --- 
+Group 'docker' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Adding netdata user to the nginx group ...
+[/opt/netdata]# usermod -a -G nginx netdata 
+ OK   
+
+Group 'varnish' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Group 'haproxy' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Adding netdata user to the adm group ...
+[/opt/netdata]# usermod -a -G adm netdata 
+ OK   
+
+Group 'nsd' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Group 'proxy' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Group 'squid' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Group 'ceph' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+Adding netdata user to the nobody group ...
+[/opt/netdata]# usermod -a -G nobody netdata 
+ OK   
+
+Group 'I2C' does not exist.
+ FAILED  Failed to add netdata user to secondary groups 
+
+ --- Check SSL certificates paths --- 
+Creating /opt/netdata/.curlrc with cacert=/etc/ssl/certs/ca-bundle.crt
+ --- Install logrotate configuration for netdata --- 
+[/opt/netdata]# cp system/netdata.logrotate /etc/logrotate.d/netdata 
+ OK   
+
+[/opt/netdata]# chmod 644 /etc/logrotate.d/netdata 
+ OK   
+
+ --- Install netdata at system init --- 
+Installing systemd service...
+[/opt/netdata]# cp system/netdata.service /lib/systemd/system/netdata.service 
+ OK   
+
+[/opt/netdata]# systemctl daemon-reload 
+ OK   
+
+[/opt/netdata]# systemctl enable netdata 
+Created symlink from /etc/systemd/system/multi-user.target.wants/netdata.service to /usr/lib/systemd/system/netdata.service.
+ OK   
+
+ --- Install (but not enable) netdata updater tool --- 
+Update script is located at /opt/netdata/usr/libexec/netdata/netdata-updater.sh
+
+ --- Check if we must enable/disable the netdata updater tool --- 
+You chose *NOT* to enable auto-update, removing any links to the updater from cron (it may have happened if you are reinstalling)
+
+Did not find any cron entries to remove
+
+ --- creating quick links --- 
+[/opt/netdata]# ln -s bin sbin 
+ OK   
+
+[/opt/netdata/usr]# ln -s ../bin bin 
+ OK   
+
+[/opt/netdata/usr]# ln -s ../bin sbin 
+ OK   
+
+[/opt/netdata/usr]# ln -s . local 
+ OK   
+
+[/opt/netdata]# ln -s etc/netdata netdata-configs 
+ OK   
+
+[/opt/netdata]# ln -s usr/share/netdata/web netdata-web-files 
+ OK   
+
+[/opt/netdata]# ln -s usr/libexec/netdata netdata-plugins 
+ OK   
+
+[/opt/netdata]# ln -s var/lib/netdata netdata-dbs 
+ OK   
+
+[/opt/netdata]# ln -s var/cache/netdata netdata-metrics 
+ OK   
+
+[/opt/netdata]# ln -s var/log/netdata netdata-logs 
+ OK   
+
+[/opt/netdata/etc/netdata]# rm orig 
+ OK   
+
+[/opt/netdata/etc/netdata]# ln -s ../../usr/lib/netdata/conf.d orig 
+ OK   
+
+ --- fix permissions --- 
+[/opt/netdata]# chmod g+rx\,o+rx /opt 
+ OK   
+
+[/opt/netdata]# chown -R netdata:netdata /opt/netdata 
+ OK   
+
+ --- fix plugin permissions --- 
+[/opt/netdata]# chown root:netdata usr/libexec/netdata/plugins.d/apps.plugin 
+ OK   
+
+[/opt/netdata]# chmod 4750 usr/libexec/netdata/plugins.d/apps.plugin 
+ OK   
+
+[/opt/netdata]# chown root:netdata usr/libexec/netdata/plugins.d/ioping 
+ OK   
+
+[/opt/netdata]# chmod 4750 usr/libexec/netdata/plugins.d/ioping 
+ OK   
+
+[/opt/netdata]# chown root:netdata usr/libexec/netdata/plugins.d/cgroup-network 
+ OK   
+
+[/opt/netdata]# chmod 4750 usr/libexec/netdata/plugins.d/cgroup-network 
+ OK   
+
+[/opt/netdata]# chown root:netdata bin/fping 
+ OK   
+
+[/opt/netdata]# chmod 4750 bin/fping 
+ OK   
+
+ --- starting netdata --- 
+ --- Restarting netdata instance --- 
+
+Stopping all netdata threads
+[/opt/netdata]# stop_all_netdata 
+ OK   
+
+Starting netdata using command 'systemctl start netdata'
+[/opt/netdata]# systemctl start netdata 
+ OK   
+
+
+  ^
+  |.-.   .-.   .-.   .-.   .-.   .  netdata              .-.   .-.   .-.   .-
+  |   '-'   '-'   '-'   '-'   '-'   is installed now!  -'   '-'   '-'   '-'  
+  +----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--->
+
+[/opt/netdata]# chmod 0644 /opt/netdata/etc/netdata/netdata.conf 
+ OK   
+

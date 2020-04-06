@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# path to php program
+export PHP_BIN='/usr/bin/php'
+
+# Path used to store php sessions (session.save_path)
+export PHP_SESSION_SAVE_PATH='/var/lib/php/sessions'
+
+# php-fpm
+export PHP_FPM_RC_SCRIPT_NAME='php-fpm'
+export PHP_FPM_CONF='/etc/php-fpm.conf'
+export PHP_FPM_POOL_DIR='/etc/php-fpm.d'
+export PHP_FPM_LOGROTATE_CONF='/etc/logrotate.d/php-fpm'
+
+# Disabled PHP functions.
+#   - Roundcube requires: proc_open, proc_close, escapeshellarg.
+export PHP_DISABLE_FUNCTIONS='posix_uname,eval,pcntl_wexitstatus,posix_getpwuid,xmlrpc_entity_decode,pcntl_wifstopped,pcntl_wifexited,pcntl_wifsignaled,phpAds_XmlRpc,pcntl_strerror,ftp_exec,pcntl_wtermsig,mysql_pconnect,proc_nice,pcntl_sigtimedwait,posix_kill,pcntl_sigprocmask,fput,phpinfo,system,phpAds_remoteInfo,ftp_login,inject_code,posix_mkfifo,highlight_file,escapeshellcmd,show_source,pcntl_wifcontinued,fp,pcntl_alarm,pcntl_wait,ini_alter,posix_setpgid,parse_ini_file,ftp_raw,pcntl_waitpid,pcntl_getpriority,ftp_connect,pcntl_signal_dispatch,pcntl_wstopsig,ini_restore,ftp_put,passthru,proc_terminate,posix_setsid,pcntl_signal,pcntl_setpriority,phpAds_xmlrpcEncode,pcntl_exec,ftp_nb_fput,ftp_get,phpAds_xmlrpcDecode,pcntl_sigwaitinfo,shell_exec,pcntl_get_last_error,ftp_rawlist,pcntl_fork,posix_setuid'
+
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    export PHP_INI='/etc/php.ini'
+    export PHP_FPM_PID_FILE='/run/php-fpm/php-fpm.pid'
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    if [ X"${DISTRO_CODENAME}" == X'stretch' ]; then
+        # Debian 9
+        export PHP_VERSION='7.0'
+    elif [ X"${DISTRO_CODENAME}" == X'buster' ]; then
+        # Debian 10
+        export PHP_VERSION='7.3'
+    else
+        # Ubuntu 18.04, 19.04
+        export PHP_VERSION='7.2'
+    fi
+
+    export PHP_INI="/etc/php/${PHP_VERSION}/fpm/php.ini"
+    export PHP_FPM_CONF="/etc/php/${PHP_VERSION}/fpm/php-fpm.conf"
+    export PHP_FPM_PID_FILE='/run/php/php-fpm.pid'
+    export PHP_FPM_LOGROTATE_CONF="${LOGROTATE_DIR}/php${PHP_VERSION}-fpm"
+    export PHP_FPM_POOL_DIR="/etc/php/${PHP_VERSION}/fpm/pool.d"
+    export PHP_FPM_RC_SCRIPT_NAME="php${PHP_VERSION}-fpm"
+    export PHPENMOD_BIN='phpenmod'
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export PHP_BIN='/usr/local/bin/php'
+
+    # Copy from example: /usr/local/etc/php.ini-production
+    export PHP_INI='/usr/local/etc/php.ini'
+    export PHP_FPM_CONF='/usr/local/etc/php-fpm.conf'
+    export PHP_FPM_POOL_DIR='/usr/local/etc/php-fpm.d'
+    export PHP_FPM_LOGROTATE_CONF="${LOGROTATE_DIR}/php-fpm"
+    export PHP_FPM_PID_FILE='/var/run/php-fpm.pid'
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export OB_PHP_VERSION='7.3'
+    export PHP_FPM_RC_SCRIPT_NAME='php73_fpm'
+
+    export PHP_BIN="/usr/local/bin/php-${OB_PHP_VERSION}"
+    export PHP_INI="/etc/php-${OB_PHP_VERSION}.ini"
+    export PHP_FPM_PID_FILE='/var/run/php-fpm.pid'
+fi
+
+# PHP-FPM
+export PHP_FPM_POOL_WWW_CONF="${PHP_FPM_POOL_DIR}/www.conf"
+# log
+export PHP_FPM_LOG_DIR='/var/log/php-fpm'
+export PHP_FPM_LOG_MAIN="${PHP_FPM_LOG_DIR}/php-fpm.log"
+export PHP_FPM_LOG_SLOW="${PHP_FPM_LOG_DIR}/slow.log"
+# parameters
+export PHP_FPM_REQUEST_SLOWLOG_TIMEOUT='10s'
+export PHP_FPM_URI_STATUS='status'
+export PHP_FPM_URI_PING='ping'
+export PHP_FPM_POOL_MAX_CHILDREN=100
+export PHP_FPM_POOL_START_SERVERS=5
+export PHP_FPM_POOL_MIN_SPARE_SERVERS=5
+export PHP_FPM_POOL_MAX_SPARE_SERVERS=10
+export PHP_FPM_POOL_MAX_REQUESTS=100
+export PHP_FPM_POOL_REQUEST_TERMINATE_TIMEOUT='60s'
+
+# connection type: mysql, mysqli (recommended for MySQL/MariaDB), pgsql.
+export PHP_CONN_TYPE='mysqli'
+[ X"${BACKEND}" == X'PGSQL' ] && export PHP_CONN_TYPE='pgsql'

@@ -1,0 +1,269 @@
+# --------------------
+# INSTALL-TIME CONFIGURATION INFORMATION
+#
+# location of the Postfix queue. Default is /var/spool/postfix.
+queue_directory = PH_QUEUE_DIRECTORY
+
+# location of all postXXX commands. Default is /usr/sbin.
+command_directory = PH_COMMAND_DIRECTORY
+
+# location of all Postfix daemon programs (i.e. programs listed in the
+# master.cf file). This directory must be owned by root.
+# Default is /usr/libexec/postfix
+daemon_directory = PH_DAEMON_DIRECTORY
+
+# location of Postfix-writable data files (caches, random numbers).
+# This directory must be owned by the mail_owner account (see below).
+# Default is /var/lib/postfix.
+data_directory = PH_DATA_DIRECTORY
+
+# owner of the Postfix queue and of most Postfix daemon processes.
+# Specify the name of a user account THAT DOES NOT SHARE ITS USER OR GROUP ID
+# WITH OTHER ACCOUNTS AND THAT OWNS NO OTHER FILES OR PROCESSES ON THE SYSTEM.
+# In particular, don't specify nobody or daemon. PLEASE USE A DEDICATED USER.
+# Default is postfix.
+mail_owner = PH_MAIL_OWNER
+
+# The following parameters are used when installing a new Postfix version.
+#
+# sendmail_path: The full pathname of the Postfix sendmail command.
+# This is the Sendmail-compatible mail posting interface.
+#
+sendmail_path = PH_SENDMAIL_PATH
+
+# newaliases_path: The full pathname of the Postfix newaliases command.
+# This is the Sendmail-compatible command to build alias databases.
+#
+newaliases_path = PH_NEWALIASES_PATH
+
+# full pathname of the Postfix mailq command.  This is the Sendmail-compatible
+# mail queue listing command.
+mailq_path = PH_MAILQ_PATH
+
+# group for mail submission and queue management commands.
+# This must be a group name with a numerical group ID that is not shared with
+# other accounts, not even with the Postfix account.
+setgid_group = PH_SETGID_GROUP
+
+# external command that is executed when a Postfix daemon program is run with
+# the -D option.
+#
+# Use "command .. & sleep 5" so that the debugger can attach before
+# the process marches on. If you use an X-based debugger, be sure to
+# set up your XAUTHORITY environment variable before starting Postfix.
+#
+debugger_command =
+    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+    ddd $daemon_directory/$process_name $process_id & sleep 5
+
+debug_peer_level = 2
+
+# --------------------
+# CUSTOM SETTINGS
+#
+
+# SMTP server response code when recipient or domain not found.
+unknown_local_recipient_reject_code = 550
+
+# Do not notify local user.
+biff = no
+
+# Disable the rewriting of "site!user" into "user@site".
+swap_bangpath = no
+
+# Disable the rewriting of the form "user%domain" to "user@domain".
+allow_percent_hack = no
+
+# Allow recipient address start with '-'.
+allow_min_user = no
+
+# Disable the SMTP VRFY command. This stops some techniques used to
+# harvest email addresses.
+disable_vrfy_command = yes
+
+# Enable both IPv4 and/or IPv6: ipv4, ipv6, all.
+inet_protocols = all
+
+# Enable all network interfaces.
+inet_interfaces = all
+
+#
+# TLS settings.
+#
+# SSL key, certificate, CA
+#
+smtpd_tls_key_file = PH_SSL_KEY_FILE
+smtpd_tls_cert_file = PH_SSL_CERT_FILE
+smtpd_tls_CAfile = PH_SSL_CERT_FILE
+smtpd_tls_CApath = PH_SSL_CERT_DIR
+
+#
+# Disable SSLv2, SSLv3
+#
+smtpd_tls_protocols = !SSLv2 !SSLv3
+smtpd_tls_mandatory_protocols = !SSLv2 !SSLv3
+smtp_tls_protocols = !SSLv2 !SSLv3
+smtp_tls_mandatory_protocols = !SSLv2 !SSLv3
+lmtp_tls_protocols = !SSLv2 !SSLv3
+lmtp_tls_mandatory_protocols = !SSLv2 !SSLv3
+
+#
+# Fix 'The Logjam Attack'.
+#
+smtpd_tls_exclude_ciphers = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CDC3-SHA, KRB5-DE5, CBC3-SHA
+smtpd_tls_dh512_param_file = PH_SSL_DH512_PARAM_FILE
+smtpd_tls_dh1024_param_file = PH_SSL_DH1024_PARAM_FILE
+
+tls_random_source = dev:/dev/urandom
+
+# Log only a summary message on TLS handshake completion — no logging of client
+# certificate trust-chain verification errors if client certificate
+# verification is not required. With Postfix 2.8 and earlier, log the summary
+# message, peer certificate summary information and unconditionally log
+# trust-chain verification errors.
+smtp_tls_loglevel = 1
+smtpd_tls_loglevel = 1
+
+# Opportunistic TLS: announce STARTTLS support to remote SMTP clients, but do
+# not require that clients use TLS encryption.
+smtpd_tls_security_level = may
+
+# Produce `Received:` message headers that include information about the
+# protocol and cipher used, as well as the remote SMTP client CommonName and
+# client certificate issuer CommonName.
+# This is disabled by default, as the information may be modified in transit
+# through other mail servers. Only information that was recorded by the final
+# destination can be trusted.
+#smtpd_tls_received_header = yes
+
+# Opportunistic TLS, used when Postfix sends email to remote SMTP server.
+# Use TLS if this is supported by the remote SMTP server, otherwise use
+# plaintext.
+# References:
+#   - http://www.postfix.org/TLS_README.html#client_tls_may
+#   - http://www.postfix.org/postconf.5.html#smtp_tls_security_level
+smtp_tls_security_level = may
+
+# Use the same CA file as smtpd.
+smtp_tls_CApath = PH_SSL_CERT_DIR
+smtp_tls_CAfile = $smtpd_tls_CAfile
+smtp_tls_note_starttls_offer = yes
+
+# Enable long, non-repeating, queue IDs (queue file names).
+# The benefit of non-repeating names is simpler logfile analysis and easier
+# queue migration (there is no need to run "postsuper" to change queue file
+# names that don't match their message file inode number).
+enable_long_queue_ids = yes
+
+# Reject unlisted sender and recipient
+smtpd_reject_unlisted_recipient = yes
+smtpd_reject_unlisted_sender = yes
+
+# Header and body checks with PCRE table
+header_checks = pcre:PH_POSTFIX_FILE_HEADER_CHECKS
+body_checks = pcre:PH_POSTFIX_FILE_BODY_CHECKS
+
+# A mechanism to transform commands from remote SMTP clients.
+# This is a last-resort tool to work around client commands that break
+# interoperability with the Postfix SMTP server. Other uses involve fault
+# injection to test Postfix's handling of invalid commands.
+# Requires Postfix-2.7+.
+smtpd_command_filter = pcre:PH_POSTFIX_FILE_SMTPD_COMMAND_FILTER
+
+# HELO restriction
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+    permit_mynetworks
+    permit_sasl_authenticated
+    check_helo_access pcre:PH_POSTFIX_FILE_HELO_ACCESS
+    reject_non_fqdn_helo_hostname
+    reject_unknown_helo_hostname
+
+# Sender restrictions
+smtpd_sender_restrictions =
+    reject_non_fqdn_sender
+    reject_unlisted_sender
+    permit_mynetworks
+    permit_sasl_authenticated
+    check_sender_access pcre:PH_POSTFIX_FILE_SENDER_ACCESS
+    reject_unknown_sender_domain
+
+# Recipient restrictions
+smtpd_recipient_restrictions =
+    reject_non_fqdn_recipient
+    reject_unlisted_recipient
+    check_policy_service inet:PH_IREDAPD_SERVER_ADDRESS:PH_IREDAPD_LISTEN_PORT
+    permit_mynetworks
+    permit_sasl_authenticated
+    reject_unauth_destination
+    check_policy_service inet:127.0.0.1:PH_DOVECOT_SERVICE_QUOTA_STATUS_PORT
+
+# END-OF-MESSAGE restrictions
+smtpd_end_of_data_restrictions =
+    check_policy_service inet:PH_IREDAPD_SERVER_ADDRESS:PH_IREDAPD_LISTEN_PORT
+
+# Data restrictions
+smtpd_data_restrictions = reject_unauth_pipelining
+
+# SRS (Sender Rewriting Scheme) support
+#sender_canonical_maps = tcp:PH_IREDAPD_SERVER_ADDRESS:PH_IREDAPD_SRS_FORWARD_PORT
+#sender_canonical_classes = envelope_sender
+#recipient_canonical_maps = tcp:PH_IREDAPD_SERVER_ADDRESS:PH_IREDAPD_SRS_REVERSE_PORT
+#recipient_canonical_classes= envelope_recipient,header_recipient
+
+proxy_read_maps = $canonical_maps $lmtp_generic_maps $local_recipient_maps $mydestination $mynetworks $recipient_bcc_maps $recipient_canonical_maps $relay_domains $relay_recipient_maps $relocated_maps $sender_bcc_maps $sender_canonical_maps $smtp_generic_maps $smtpd_sender_login_maps $transport_maps $virtual_alias_domains $virtual_alias_maps $virtual_mailbox_domains $virtual_mailbox_maps $smtpd_sender_restrictions $sender_dependent_relayhost_maps
+
+# Avoid duplicate recipient messages. Default is 'yes'.
+enable_original_recipient = no
+
+# Virtual support.
+virtual_minimum_uid = PH_SYS_USER_VMAIL_UID
+virtual_uid_maps = static:PH_SYS_USER_VMAIL_UID
+virtual_gid_maps = static:PH_SYS_GROUP_VMAIL_GID
+virtual_mailbox_base = PH_STORAGE_BASE_DIR
+
+# Do not set virtual_alias_domains.
+virtual_alias_domains =
+
+#
+# Enable SASL authentication on port 25 and force TLS-encrypted SASL authentication.
+# WARNING: NOT RECOMMENDED to enable smtp auth on port 25, all end users should
+#          be forced to submit email through port 587 instead.
+#
+#smtpd_sasl_auth_enable = yes
+#smtpd_sasl_security_options = noanonymous
+#smtpd_tls_auth_only = yes
+
+# hostname
+myhostname = PH_HOSTNAME
+myorigin = PH_HOSTNAME
+mydomain = PH_HOSTNAME
+
+# trusted SMTP clients which are allowed to relay mail through Postfix.
+#
+# Note: additional IP addresses/networks listed in mynetworks should be listed
+#       in iRedAPD setting 'MYNETWORKS' (in `/opt/iredapd/settings.py`) too.
+#       for example:
+#
+#       MYNETWORKS = ['xx.xx.xx.xx', 'xx.xx.xx.0/24', ...]
+#
+mynetworks = 127.0.0.1
+
+# Accepted local emails
+mydestination = $myhostname, localhost, localhost.localdomain
+
+alias_maps = hash:PH_POSTFIX_FILE_ALIASES
+alias_database = hash:PH_POSTFIX_FILE_ALIASES
+
+# Default message_size_limit.
+message_size_limit = PH_MESSAGE_SIZE_LIMIT_BYTES
+
+# The set of characters that can separate a user name from its extension
+# (example: user+foo), or a .forward file name from its extension (example:
+# .forward+foo).
+# Postfix 2.11 and later supports multiple characters.
+recipient_delimiter = +
+
+# The time after which the sender receives a copy of the message headers of
+# mail that is still queued. Default setting is disabled (0h) by Postfix.
+#delay_warning_time = 1h

@@ -1,0 +1,701 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+export PROG_NAME='iRedMail'
+export PROG_NAME_LOWERCASE='iredmail'
+export PROG_VERSION='1.1'
+
+export DATE="$(/bin/date +%Y.%m.%d.%H.%M.%S)"
+
+# For perl and run-time locale setting.
+export LC_ALL=C
+export LC_CTYPE=C
+export LANG=C
+
+# Tells ncurses (dialog) to use Unicode values which correspond to the VT100
+# line-drawing glyphs.
+export NCURSES_NO_UTF8_ACS=1
+
+# Debug mode: YES, NO.
+export IREDMAIL_DEBUG="${IREDMAIL_DEBUG:=NO}"
+
+# -----------------
+# ---- Generic ----
+# -----------------
+# Maildir style: hashed, normal.
+export MAILDIR_STYLE='hashed'
+
+# Mailboxes will be stored under sub-directory ${STORAGE_NODE} of vmail user's
+# home directory. e.g. home directory is /var/vmail, the mailboxes will be
+# /var/vmail/vmail1.
+export STORAGE_NODE="${STORAGE_NODE:=vmail1}"
+
+# Enabled backends.
+export ENABLE_BACKEND_OPENLDAP='YES'
+export ENABLE_BACKEND_PGSQL='YES'
+export ENABLE_BACKEND_MARIADB='YES'
+
+# For better distributed deployment
+#
+# IP address of localhost.
+# Usually it's 127.0.0.1, but not in FreeBSD Jail.
+export LOCAL_ADDRESS="${LOCAL_ADDRESS:=127.0.0.1}"
+
+# LDAP server
+export LDAP_SERVER_HOST="${LDAP_SERVER_HOST:=${LOCAL_ADDRESS}}"
+export LDAP_SERVER_PORT="${LDAP_SERVER_PORT:=389}"
+
+# MySQL server
+export MYSQL_SERVER_ADDRESS="${MYSQL_SERVER_ADDRESS:=${LOCAL_ADDRESS}}"
+export MYSQL_SERVER_PORT="${MYSQL_SERVER_PORT:=3306}"
+export MYSQL_ROOT_USER="${MYSQL_ROOT_USER:=root}"
+
+# Use existing MySQL server, no matter it's local or remote.
+export USE_EXISTING_MYSQL="${USE_EXISTING_MYSQL:=NO}"
+# Create required SQL databases and records for applications
+# Should be set to NO if you're installing iRedMail with a MySQL cluster, and
+# you're installing on second or later nodes.
+export INITIALIZE_SQL_DATA="${INITIALIZE_SQL_DATA:=YES}"
+
+# PGSQL server
+export PGSQL_SERVER_ADDRESS="${PGSQL_SERVER_ADDRESS:=${LOCAL_ADDRESS}}"
+export PGSQL_SERVER_PORT="${PGSQL_SERVER_PORT:=5432}"
+# host address used in ~postgres/.pgpass
+export PGSQL_PGPASS_HOST='localhost'
+if [ X"${LOCAL_ADDRESS}" != X'127.0.0.1' ]; then
+    export PGSQL_PGPASS_HOST="${LOCAL_ADDRESS}"
+fi
+
+# Dovecot: POP3, IMAP, managesieve
+export IMAP_SERVER="${IMAP_SERVER:=${LOCAL_ADDRESS}}"
+export LMTP_BIND_ADDRESS="${LMTP_BIND_ADDRESS:=${LOCAL_ADDRESS}}"
+export LMTP_BIND_PORT="${LMTP_BIND_PORT:=24}"
+export MANAGESIEVE_BIND_HOST="${MANAGESIEVE_BIND_HOST:=${LOCAL_ADDRESS}}"
+export MANAGESIEVE_BIND_PORT="${MANAGESIEVE_BIND_PORT:=4190}"
+export MANAGESIEVE_SERVER="${MANAGESIEVE_SERVER:=${LOCAL_ADDRESS}}"
+export MANAGESIEVE_PORT="${MANAGESIEVE_PORT:=4190}"
+export DOVECOT_SERVICE_QUOTA_STATUS_BIND_ADDRESS="${DOVECOT_QUOTA_STATUS_BIND_ADDRESS:=127.0.0.1}"
+# SMTP server (Postfix)
+export SMTP_SERVER="${SMTP_SERVER:=${LOCAL_ADDRESS}}"
+# php-fpm
+export PHP_FPM_BIND_HOST="${PHP_FPM_BIND_HOST:=${LOCAL_ADDRESS}}"
+export PHP_FPM_PORT="${PHP_FPM_PORT:=9999}"
+# Amavisd
+export AMAVISD_SERVER="${LOCAL_ADDRESS}"
+# ClamAV
+export CLAMD_BIND_HOST="${LOCAL_ADDRESS}"
+# iRedAPD
+export IREDAPD_BIND_HOST="${LOCAL_ADDRESS}"
+export IREDAPD_SERVER_ADDRESS="${IREDAPD_SERVER_ADDRESS:=${IREDAPD_BIND_HOST}}"
+# mlmmjadmin
+export MLMMJADMIN_BIND_HOST="${LOCAL_ADDRESS}"
+export MLMMJADMIN_SERVER_ADDRESS="${MLMMJADMIN_SERVER_ADDRESS:=${MLMMJADMIN_BIND_HOST}}"
+# For managesieve service and software.
+export USE_MANAGESIEVE='YES'
+
+# vmail user/group name, uid and gid.
+export SYS_USER_VMAIL='vmail'
+export SYS_GROUP_VMAIL='vmail'
+
+# netdata
+export SYS_USER_NETDATA='netdata'
+export SYS_GROUP_NETDATA='netdata'
+
+# Specify UID/GID for system accounts. Required if you have multiple LDA/LMTP
+# servers access same mailbox storage. e.g. cluster environment.
+# vmail
+export SYS_USER_VMAIL_UID='2000'
+export SYS_GROUP_VMAIL_GID='2000'
+# iredadmin
+export SYS_USER_IREDADMIN_UID='2001'
+export SYS_GROUP_IREDADMIN_GID='2001'
+# netdata
+export SYS_USER_IREDAPD_UID='2002'
+export SYS_GROUP_IREDAPD_GID='2002'
+# mlmmj
+export SYS_USER_MLMMJ_UID='2003'
+export SYS_GROUP_MLMMJ_GID='2003'
+# netdata
+export SYS_USER_NETDATA_UID='2004'
+export SYS_GROUP_NETDATA_GID='2004'
+
+# Default SQL database name used to store mail accounts.
+export VMAIL_DB_NAME='vmail'
+export VMAIL_DB_BIND_USER='vmail'
+export VMAIL_DB_ADMIN_USER='vmailadmin'
+
+# Default virtual domain admin name without domain name (@example.com).
+export DOMAIN_ADMIN_NAME='postmaster'
+
+# Directory used to store mailboxes
+export STORAGE_BASE_DIR="${STORAGE_BASE_DIR:=/var/vmail}"
+
+# Tools.
+export CONFIG_VIA_DIALOG="${DIALOG_DIR}/config_via_dialog.sh"
+# Note: config file will be sourced in file 'conf/core', function 'check_env()'.
+export IREDMAIL_CONFIG_FILE="${ROOTDIR}/config"
+export TIP_FILE="${ROOTDIR}/${PROG_NAME}.tips"
+export DOC_FILE="${ROOTDIR}/Documentations"
+export RUNTIME_DIR="${ROOTDIR}/runtime"
+export STATUS_FILE="${RUNTIME_DIR}/install.status"
+export INSTALL_LOG="${RUNTIME_DIR}/install.log"
+export PKG_INSTALL_LOG="${RUNTIME_DIR}/pkg.install.log"
+# Directory used to store kv files (one value in one file).
+export IREDMAIL_KV_DIR='/root/.iredmail/kv'
+
+# Output flag.
+export _INFO_FLAG="[ INFO ]"
+export _SKIP_FLAG="< SKIP >"
+export _ERROR_FLAG="<< ERROR >>"
+export _QUESTION_FLAG="< Question >"
+export _BACKUP_FLAG=" + < Backup >"
+export _DEBUG_FLAG=" + < DEBUG >"
+
+export CONF_MSG="#
+# File generated by ${PROG_NAME} (${DATE}):
+#
+# Version:  ${PROG_VERSION}
+# Project:  https://www.iredmail.org/
+#
+# Community: https://forum.iredmail.org/
+#
+"
+
+# TERM.
+if [ X"${TERM}" == X"" ]; then
+    export TERM='xterm'
+fi
+
+# Logrotate configuration directory.
+export LOGROTATE_DIR='/etc/logrotate.d'
+
+# Kernel name, in upper cases.
+export KERNEL_NAME="$(uname -s | tr '[a-z]' '[A-Z]')"
+
+# Command used to genrate a random string.
+# Usage: str="$(${RANDOM_STRING})"
+if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
+    export RANDOM_STRING='eval </dev/urandom tr -dc A-Za-z0-9 | (head -c $1 &>/dev/null || head -c 30)'
+else
+    export RANDOM_STRING='eval echo $RANDOM$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM | md5'
+fi
+
+# command: dialog.
+export BIN_DIALOG="dialog"
+export PKG_DIALOG="dialog"
+
+# command: bzip2.
+export BIN_BZIP2='bzip2'
+export PKG_BZIP2='bzip2'
+
+# Shells
+export SHELL_NOLOGIN='/sbin/nologin'
+export SHELL_BASH='/bin/bash'
+
+# Path to some programs
+export CMD_PYTHON2='python2'
+export CMD_PYTHON3='python3'
+export PERL_BIN='/usr/bin/perl'
+
+# Default password scheme for SQL backends.
+# LDAP backend will use SSHA instead (defined in file
+# dialog/config_via_dialog.sh), because many applications need to bind as user.
+export DEFAULT_PASSWORD_SCHEME='SSHA512'
+
+# Check distribution.
+#   - DISTRO
+#   - DISTRO_VERSION
+#   - DISTRO_CODENAME
+#
+# UNSUPPORTED_RELEASE will be set to 'YES' if current Linux/BSD release is
+# an old release and unsupported anymore.
+export UNSUPPORTED_RELEASE='NO'
+
+# Detect distro name and release version.
+if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
+    # Directory of RC scripts.
+    export DIR_RC_SCRIPTS='/etc/init.d'
+
+    if [ -f /etc/redhat-release ]; then
+        # RHEL/CentOS
+        export DISTRO='RHEL'
+
+        # Get distribution version
+        if grep '\ 7' /etc/redhat-release &>/dev/null; then
+            # version 7.x
+            export DISTRO_VERSION='7'
+        else
+            export UNSUPPORTED_RELEASE='YES'
+        fi
+
+        # Get distribution name as DISTRO_CODENAME
+        if grep '^Red' /etc/redhat-release &>/dev/null; then
+            # RHEL
+            export DISTRO_CODENAME='rhel'
+        elif grep '^CentOS' /etc/redhat-release &>/dev/null; then
+            # CentOS
+            export DISTRO_CODENAME='centos'
+        elif grep '^Scientific' /etc/redhat-release &>/dev/null; then
+            # Scientific Linux
+            export DISTRO_CODENAME='scientific'
+        else
+            export UNSUPPORTED_RELEASE='YES'
+        fi
+
+    elif [ -f /etc/lsb-release ] && grep -i 'DISTRIB_ID=Ubuntu' /etc/lsb-release &>/dev/null; then
+        # Ubuntu
+        export DISTRO='UBUNTU'
+
+        # Ubuntu version number and code name:
+        #   - 18.04: bionic
+        export DISTRO_VERSION="$(awk -F'=' '/^DISTRIB_RELEASE/ {print $2}' /etc/lsb-release)"
+        export DISTRO_CODENAME="$(awk -F'=' '/^DISTRIB_CODENAME/ {print $2}' /etc/lsb-release)"
+
+        # Unsupported releases: 16.x, 17.x, 18.10, 19.04 (missing dependent packages)
+        if echo "${DISTRO_VERSION}" | grep -E '^(16|17|18\.10|19\.04)' &>/dev/null ; then
+            export UNSUPPORTED_RELEASE='YES'
+        fi
+    elif [ -f /etc/debian_version ]; then
+        # Debian
+        export DISTRO='DEBIAN'
+
+        # Get major release version number
+        export DISTRO_VERSION="$(cat /etc/debian_version)"
+
+        # Set distro code name and unsupported releases.
+        if grep '^9' /etc/debian_version &>/dev/null || \
+            grep -i '^stretch' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='9'
+            export DISTRO_CODENAME='stretch'
+        elif grep -i '^10' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='10'
+            export DISTRO_CODENAME='buster'
+        else
+            export UNSUPPORTED_RELEASE='YES'
+        fi
+    else
+        export UNSUPPORTED_RELEASE='YES'
+    fi
+elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
+    export DISTRO='FREEBSD'
+    export DISTRO_VERSION="$(uname -r |awk -F'[.-]' '{print $1}')"
+
+    # Directory of RC scripts.
+    export DIR_RC_SCRIPTS='/usr/local/etc/rc.d'
+    export RC_CONF_LOCAL='/etc/rc.conf.local'
+
+    export CMD_PYTHON2='/usr/local/bin/python2'
+    export CMD_PYTHON3='/usr/local/bin/python3'
+    export PERL_BIN='/usr/local/bin/perl'
+
+    # Unsupported releases: 7, 8.
+    if echo "${DISTRO_VERSION}" | grep '^[78]' &>/dev/null ; then
+        export UNSUPPORTED_RELEASE='YES'
+    fi
+
+    export SHELL_BASH='/usr/local/bin/bash'
+
+    # Default password scheme.
+    export DEFAULT_PASSWORD_SCHEME='BCRYPT'
+
+elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
+    export DISTRO='OPENBSD'
+    export DISTRO_VERSION="$(uname -r)"
+
+    # Directory of RC scripts.
+    export DIR_RC_SCRIPTS='/etc/rc.d'
+    export RC_CONF_LOCAL='/etc/rc.conf.local'
+    export SHELL_BASH='/usr/local/bin/bash'
+    export CMD_PYTHON2='/usr/local/bin/python2'
+    export CMD_PYTHON3='/usr/local/bin/python3'
+
+    # Unsupported release: 6.5 and earlier versions.
+    if echo "${DISTRO_VERSION}" | grep '^6.[012345]' &>/dev/null ; then
+        export UNSUPPORTED_RELEASE='YES'
+    fi
+
+    # Default password scheme.
+    export DEFAULT_PASSWORD_SCHEME='BCRYPT'
+
+else
+    # Not support *BSD and other distrobutions yet.
+    echo "Error: Your OS is not supported yet."
+    exit 255
+fi
+
+# Exit and prompt to use a supported Linux/BSD distribution
+if [ X"${UNSUPPORTED_RELEASE}" == X'YES' ]; then
+    cat <<EOF
+********* ERROR *********
+Release version of the operating system on this server is unsupported by
+iRedMail, please access below link to get the latest iRedMail and a list
+of supported Linux/BSD distributions and release versions.
+
+http://www.iredmail.org/download.html
+
+*************************
+EOF
+
+    exit 255
+fi
+
+# Check processor type.
+if [ X"${DISTRO}" == X'DEBIAN' ]; then
+    arch="$(uname -m)"
+else
+    arch="$(uname -p)"
+fi
+
+case $arch in
+    i[3456]86) export OS_ARCH='i386' ;;
+    x86_64|amd64) export OS_ARCH='x86_64' ;;
+    *) export OS_ARCH="${arch}" ;;
+esac
+
+# Hostname.
+if [ X"${IREDMAIL_HOSTNAME}" != X'' ]; then
+    # Read from 'IREDMAIL_HOSTNAME'
+    export HOSTNAME="${IREDMAIL_HOSTNAME}"
+else
+    if [ X"${DISTRO}" == X'OPENBSD' ]; then
+        export HOSTNAME="$(hostname)"
+    else
+        export HOSTNAME="$(hostname -f)"
+    fi
+fi
+
+# root user/group name. Note: not all OSes have group 'root'.
+export SYS_USER_ROOT='root'
+export SYS_GROUP_ROOT='root'
+
+# Syslog
+export USE_RSYSLOG='YES'
+export USE_BSD_SYSLOG='NO'
+export SYS_USER_SYSLOG='root'
+export SYS_GROUP_SYSLOG='root'
+export SYSLOG_POSTROTATE_CMD=''
+export IREDMAIL_SYSLOG_FACILITY='local5'
+# rsyslog
+export SYSLOG_CONF_DIR='/etc/rsyslog.d'
+
+# Use systemd
+export USE_SYSTEMD='NO'
+export SYSTEMD_SERVICE_DIR='/lib/systemd/system'
+
+# install_pkg: function used to install packages without confirm.
+# remove_pkg: function used to remove packages without confirm.
+# LIST_ALL_PKGS: command used to list all installed packages.
+# LIST_FILES_IN_PKG: command used to list files installed by special package.
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    # RHEL/CentOS.
+    # Package management.
+    if [ X"${YUM}" != X"" ]; then
+        export YUM="${YUM}"
+    else
+        export YUM="yum -d 2"
+    fi
+    export install_pkg='install_pkg_rhel'
+    export remove_pkg="remove_pkg_rhel"
+    export LIST_ALL_PKGS='rpm -qa'
+    export LIST_FILES_IN_PKG='rpm -ql'
+
+    # Directory /etc/sysconfig/ on RHEL/CentOS.
+    export ETC_SYSCONFIG_DIR='/etc/sysconfig'
+
+    if [ X"${DISTRO_VERSION}" == X'7' ]; then
+        export USE_SYSTEMD='YES'
+
+        # iptables rule file.
+        export USE_FIREWALLD='YES'
+        export FIREWALLD_CONF_DIR='/etc/firewalld'
+        export FIREWALLD_CONF='/etc/firewalld/firewalld.conf'
+        export FIREWALL_RULE_CONF="${FIREWALLD_CONF_DIR}/zones/iredmail.xml"
+    fi
+
+    # main config file
+    export SYSLOG_CONF='/etc/rsyslog.conf'
+    export SYSLOG_POSTROTATE_CMD='/bin/kill -HUP $(cat /var/run/syslogd.pid 2>/dev/null) 2>/dev/null || true'
+
+    # SSHD log file
+    export SSHD_LOGFILE='/var/log/secure'
+
+    # Crontab related.
+    export CRON_SPOOL_DIR='/var/spool/cron'
+
+    # Directory used to store SSL/TLS key/cert file.
+    export SSL_FILE_DIR="/etc/pki/tls"
+
+    # Yum repository related.
+    export YUM_REPOS_DIR='/etc/yum.repos.d'
+    export LOCAL_REPO_NAME="${PROG_NAME}"
+    export LOCAL_REPO_FILE="${YUM_REPOS_DIR}/${LOCAL_REPO_NAME}.repo"
+
+    # Override default value.
+    export PKG_DIALOG="dialog"
+    export PKG_BZIP2="bzip2"
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    # Ubuntu & Debian.
+    export DEBIAN_FRONTEND='noninteractive'
+    export SHELL_NOLOGIN='/usr/sbin/nologin'
+
+    # Package management.
+    if [ X"${APTGET}" != X"" ]; then
+        export APTGET="${APTGET}"
+    else
+        export APTGET='apt-get'
+    fi
+
+    # Package management.
+    export install_pkg='install_pkg_debian'
+    export remove_pkg='remove_pkg_debian'
+    export LIST_ALL_PKGS="dpkg -l |awk '{print $2}'"
+    export LIST_FILES_IN_PKG='dpkg -L'
+
+    # Syslog
+    export SYS_GROUP_SYSLOG='adm'
+    if [ X"${DISTRO}" == X'DEBIAN' ]; then
+        export SYSLOG_CONF='/etc/rsyslog.conf'
+    elif [ X"${DISTRO}" == X'UBUNTU' ]; then
+        export SYS_USER_SYSLOG='syslog'
+        export SYSLOG_CONF='/etc/rsyslog.d/iredmail.conf'
+    fi
+
+    if [ X"${DISTRO_CODENAME}" == X'stretch' ]; then
+        # Debian 9
+        export SYSLOG_POSTROTATE_CMD='/usr/sbin/service rsyslog restart'
+    else
+        # Debian 10, Ubuntu 18.04
+        export SYSLOG_POSTROTATE_CMD='/usr/lib/rsyslog/rsyslog-rotate'
+    fi
+
+    # systemd support.
+    if which systemctl &>/dev/null; then
+        export USE_SYSTEMD='YES'
+    fi
+
+    # SSHD log file
+    export SSHD_LOGFILE='/var/log/auth.log'
+
+    # Crontab related.
+    export CRON_SPOOL_DIR='/var/spool/cron/crontabs'
+
+    # Directory /etc/default/ on Debian/Ubuntu.
+    export ETC_SYSCONFIG_DIR='/etc/default'
+
+    # iptables rule file.
+    export FIREWALL_RULE_CONF="${ETC_SYSCONFIG_DIR}/iptables"
+    export FIREWALL_RULE_CONF6="${ETC_SYSCONFIG_DIR}/ip6tables"
+
+    if [ X"${DISTRO_CODENAME}" == X'buster' ]; then
+        export USE_NFTABLES='YES'
+        export NFTABLES_CONF='/etc/nftables.conf'
+        export FIREWALL_RULE_CONF="${NFTABLES_CONF}"
+    fi
+
+    # Directory used to store SSL/TLS key/cert file.
+    export SSL_FILE_DIR="/etc/ssl"
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export SYS_GROUP_ROOT='wheel'
+
+    # sysrc: safely edit system rc files
+    export SYSRC='/usr/sbin/sysrc'
+
+    # Package management.
+    if [ X"${PKGADD}" != X"" ]; then
+        export PKGADD="${PKGADD}"
+    else
+        export PKGADD="pkg_add"
+    fi
+
+    if [ X"${DISTRO_VERSION}" == X'9' ]; then
+        export LIST_ALL_PKGS="pkg_info | awk '{print $1}'"
+        export LIST_FILES_IN_PKG='pkg_info -L'
+    else
+        # use pkgng on FreeBSD 10 and later releases.
+        export LIST_ALL_PKGS="pkg info | awk '{print $1}'"
+        export LIST_FILES_IN_PKG='pkg query "%Fp"'
+    fi
+
+    # Port directory
+    export PORT_WRKDIRPREFIX='/usr/ports'
+
+    # Syslog (newsyslog)
+    export USE_RSYSLOG='NO'
+    export USE_BSD_SYSLOG='YES'
+    export SYS_GROUP_SYSLOG='wheel'
+    export SYSLOG_CONF='/etc/syslog.conf'
+    export SYSLOG_CONF_DIR='/usr/local/etc/syslog.d'
+
+    # SSHD log file
+    export SSHD_LOGFILE='/var/log/auth.log'
+
+    # Crontab related.
+    export CRON_SPOOL_DIR='/var/cron/tabs'
+
+    export ETC_SYSCONFIG_DIR='/etc/defaults'
+    export FREEBSD_MAKE_CONF='/etc/make.conf'
+
+    # IPFW rule file.
+    export FIREWALL_RULE_CONF="${ETC_SYSCONFIG_DIR}/ipfw.rules"
+
+    # Directory used to store SSL/TLS key/cert file.
+    export SSL_FILE_DIR="/etc/ssl"
+
+    # Logrotate directory.
+    export LOGROTATE_DIR='/usr/local/etc/newsyslog.conf.d'
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export SYS_GROUP_ROOT='wheel'
+
+    # Package management.
+    export install_pkg='install_pkg_openbsd'
+    export remove_pkg='pkg_delete'
+    export LIST_ALL_PKGS="pkg_info -a | awk '{print $1}'"
+    export LIST_FILES_IN_PKG='pkg_info -L'
+
+    # Syslog (newsyslog)
+    export USE_RSYSLOG='NO'
+    export USE_BSD_SYSLOG='YES'
+    export SYS_GROUP_SYSLOG='wheel'
+    export SYSLOG_CONF='/etc/syslog.conf'
+
+    # SSHD log file
+    export SSHD_LOGFILE='/var/log/authlog'
+
+    # Crontab related.
+    export CRON_SPOOL_DIR='/var/cron/tabs'
+
+    # PF rule file.
+    export FIREWALL_RULE_CONF="/etc/pf.conf"
+
+    # Directory used to store SSL/TLS key/cert file.
+    export SSL_FILE_DIR="/etc/ssl"
+else
+    # Not support yet.
+    echo "Your distrobution is not supported yet."
+    exit 255
+fi
+
+# Use a seperated directory to store iRedMail certs/keys.
+if [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export SSL_CERT_DIR="${SSL_FILE_DIR}"
+    export SSL_KEY_DIR="${SSL_FILE_DIR}"
+else
+    export SSL_CERT_DIR="${SSL_FILE_DIR}/certs"
+    export SSL_KEY_DIR="${SSL_FILE_DIR}/private"
+fi
+
+# Root's cron file
+export CRON_FILE_ROOT="${CRON_SPOOL_DIR}/${SYS_USER_ROOT}"
+
+# dhparam file required to fix 'The Logjam Attack'.
+export SSL_DH512_PARAM_FILE="${SSL_FILE_DIR}/dh512_param.pem"
+export SSL_DH1024_PARAM_FILE="${SSL_FILE_DIR}/dh2048_param.pem"
+
+# use of the most secure ciphers first and gradually fall back to
+# less-preferred ciphers should the client not support them.
+export SSL_CIPHERS='ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5'
+
+# SSL key.
+export OPENSSL_CONF="${SSL_FILE_DIR}/openssl.cnf"
+export SSL_CERT_FILE="${SSL_CERT_DIR}/iRedMail.crt"
+export SSL_KEY_FILE="${SSL_KEY_DIR}/iRedMail.key"
+export TLS_COUNTRY='CN'
+export TLS_STATE='GuangDong'
+export TLS_CITY='ShenZhen'
+export TLS_COMPANY="${HOSTNAME}"
+export TLS_DEPARTMENT='IT'
+export TLS_HOSTNAME="${HOSTNAME}"
+export TLS_ADMIN="root@${HOSTNAME}"
+
+# Default SSL key size in bits
+export SSL_KEY_SIZE='2048'
+default_ssl_key_size="$(awk '/^default_bits/ {print $3}' ${OPENSSL_CONF} 2>/dev/null)"
+if [ -z ${default_ssl_key_size} ]; then
+    :
+elif [ ${default_ssl_key_size} -ge ${SSL_KEY_SIZE} ]; then
+    export SSL_KEY_SIZE="${default_ssl_key_size}"
+fi
+
+# Location of sshd_config
+export SSHD_CONFIG='/etc/ssh/sshd_config'
+
+if [[ -f ${SSHD_CONFIG} ]]; then
+    export SSHD_PORT="$(awk '/^Port/ {print $2}' ${SSHD_CONFIG} | head -1)"
+    export SSHD_PORT2="$(awk '/^Port/ {print $2}' ${SSHD_CONFIG} | tail -1)"
+fi
+
+if [ X"${SSHD_PORT}" == X'' ]; then
+    # No port number defined, use default port number (22).
+    export SSHD_PORT='22'
+    export SSHD_PORT2='22'
+fi
+
+export SSHD_PORTS_WITH_COMMA="${SSHD_PORT}"
+export SSHD_PORTS_WITH_SPACE="${SSHD_PORT}"
+
+if [ X"${SSHD_PORT}" != X'' -a X"${SSHD_PORT2}" != X'' -a X"${SSHD_PORT}" != X"${SSHD_PORT2}" ]; then
+    export SSHD_PORTS_WITH_COMMA="${SSHD_PORT},${SSHD_PORT2}"
+    export SSHD_PORTS_WITH_SPACE="${SSHD_PORT} ${SSHD_PORT2}"
+fi
+
+# sysctl.conf
+export SYSCTL_CONF='/etc/sysctl.conf'
+
+# Command use to fetch source tarballs.
+if [ X"${DISTRO}" == X'FREEBSD' ]; then
+    if [ -f /usr/local/etc/ssl/cert.pem ]; then
+        # require package/port 'security/ca_root_nss'
+        FETCH_CMD='fetch'
+    else
+        FETCH_CMD='fetch --no-verify-hostname --no-verify-peer'
+    fi
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    # -i: Turns off interactive prompting during multiple file transfers.
+    # -V: Disable verbose and progress
+    FETCH_CMD='ftp -iV'
+else
+    # -c: Continue getting a partially-downloaded file.
+    # -q: Turn off Wget's output.
+    FETCH_CMD="wget -cq --timeout=30"
+
+    if [ X"${DISTRO}" == X'RHEL' ]; then
+        FETCH_CMD="${FETCH_CMD} --ca-certificate=${SSL_CERT_DIR}/ca-bundle.crt"
+    fi
+fi
+
+# Where to fetch/store binary packages and source tarball.
+export IREDMAIL_MIRROR="${IREDMAIL_MIRROR:=https://dl.iredmail.org}"
+
+# Detect IPv6 support with `ping6`.
+export IREDMAIL_HAS_IPV6='NO'
+ping6 -c 1 ::1 &>/dev/null
+if [ X"$?" == X'0' ]; then
+    IREDMAIL_HAS_IPV6='YES'
+fi
+
+# Backup script file names.
+export BACKUP_SCRIPT_LDAP_NAME='backup_openldap.sh'
+export BACKUP_SCRIPT_MYSQL_NAME='backup_mysql.sh'
+export BACKUP_SCRIPT_PGSQL_NAME='backup_pgsql.sh'

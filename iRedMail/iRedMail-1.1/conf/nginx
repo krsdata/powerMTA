@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# RC scripts
+export NGINX_RC_SCRIPT_NAME='nginx'
+
+# Configuration files
+export HTTPD_CONF_ROOT='/etc/nginx'
+
+# Log directory.
+export NGINX_LOG_DIR='/var/log/nginx'
+
+# PID file
+export NGINX_PID='/var/run/nginx.pid'
+
+# Directory for storing temporary files holding client request bodies.
+export NGINX_CLIENT_BODY_TEMP_PATH='/var/lib/nginx_tmp_client_body'
+
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    # Daemon user.
+    export HTTPD_USER='nginx'
+    export HTTPD_GROUP='nginx'
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export HTTPD_CONF_ROOT="/usr/local/etc/nginx"
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export NGINX_LOG_DIR='/var/www/logs'
+
+fi
+
+# Log files.
+export NGINX_LOG_ACCESSLOG="${NGINX_LOG_DIR}/access.log"
+export NGINX_LOG_ERRORLOG="${NGINX_LOG_DIR}/error.log"
+
+export HTTPD_CONF_DIR_AVAILABLE_CONF="${HTTPD_CONF_ROOT}/conf-available"
+export HTTPD_CONF_DIR_ENABLED_CONF="${HTTPD_CONF_ROOT}/conf-enabled"
+
+# Directory used to store all sites. Note: not loaded by default.
+export HTTPD_CONF_DIR_AVAILABLE_SITES="${HTTPD_CONF_ROOT}/sites-available"
+# Directory used to store site config files which will be loaded by default.
+# Usually we just create a symbol link to file under ${HTTPD_CONF_DIR_AVAILABLE_SITES}
+export HTTPD_CONF_DIR_ENABLED_SITES="${HTTPD_CONF_ROOT}/sites-enabled"
+
+export NGINX_CONF="${HTTPD_CONF_ROOT}/nginx.conf"
+export NGINX_CONF_SITE_DEFAULT="${HTTPD_CONF_DIR_AVAILABLE_SITES}/00-default.conf"
+export NGINX_CONF_SITE_DEFAULT_SSL="${HTTPD_CONF_DIR_AVAILABLE_SITES}/00-default-ssl.conf"
+export NGINX_CONF_TMPL_DIR="${HTTPD_CONF_ROOT}/templates"
+
+export NGINX_MIME_TYPES="${HTTPD_CONF_ROOT}/mime.types"

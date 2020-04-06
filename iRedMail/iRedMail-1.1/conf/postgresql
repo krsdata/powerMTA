@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Variables for PostgreSQL database server and related.
+# PGSQL_SERVER_ADDRESS and PGSQL_SERVER_PORT are defined in conf/global.
+# SQL_SERVER_ADDRESS and SQL_SERVER_PORT are defined in dialog/config_via_dialog.sh.
+
+export SYS_USER_PGSQL='postgres'
+export SYS_GROUP_PGSQL='postgres'
+
+export PGSQL_USER_HOMEDIR='/var/lib/postgresql'
+
+export PGSQL_RC_SCRIPT_NAME='postgresql'
+
+export PGSQL_INIT_SQL_SAMPLE="${RUNTIME_DIR}/pgsql_init.pgsql"
+
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    export PGSQL_USER_HOMEDIR='/var/lib/pgsql'
+    export PGSQL_DATA_DIR="${PGSQL_USER_HOMEDIR}/data"
+
+    export PGSQL_CONF_POSTGRESQL="${PGSQL_DATA_DIR}/postgresql.conf"
+    export PGSQL_CONF_PG_HBA="${PGSQL_DATA_DIR}/pg_hba.conf"
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    if [ X"${DISTRO_CODENAME}" == X'stretch' ]; then
+        # Debian 9
+        export PGSQL_VERSION='9.6'
+    elif [ X"${DISTRO_CODENAME}" == X'bionic' ]; then
+        # Ubuntu 18.04
+        export PGSQL_VERSION='10'
+    else
+        # Debian 10, Ubuntu 19.04
+        export PGSQL_VERSION='11'
+    fi
+
+    export PGSQL_DATA_DIR="/var/lib/postgresql/${PGSQL_VERSION}/main"
+    export PGSQL_CONF_DIR="/etc/postgresql/${PGSQL_VERSION}/main"
+    export PGSQL_CONF_POSTGRESQL="${PGSQL_CONF_DIR}/postgresql.conf"
+    export PGSQL_CONF_PG_HBA="${PGSQL_CONF_DIR}/pg_hba.conf"
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export SYS_USER_PGSQL='postgres'
+    export SYS_GROUP_PGSQL='postgres'
+    export PGSQL_USER_HOMEDIR='/var/db/postgres'
+    export PGSQL_VERSION='12'
+
+    export PGSQL_DATA_DIR="${PGSQL_USER_HOMEDIR}/data${PGSQL_VERSION}"
+    export PGSQL_CONF_POSTGRESQL="${PGSQL_DATA_DIR}/postgresql.conf"
+    export PGSQL_CONF_PG_HBA="${PGSQL_DATA_DIR}/pg_hba.conf"
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export SYS_USER_PGSQL='_postgresql'
+    export SYS_GROUP_PGSQL='_postgresql'
+    export PGSQL_USER_HOMEDIR='/var/postgresql'
+
+    export PGSQL_DATA_DIR="${PGSQL_USER_HOMEDIR}/data"
+    export PGSQL_CONF_POSTGRESQL="${PGSQL_DATA_DIR}/postgresql.conf"
+    export PGSQL_CONF_PG_HBA="${PGSQL_DATA_DIR}/pg_hba.conf"
+fi
+
+export PGSQL_ROOT_USER="${SYS_USER_PGSQL}"
+export PGSQL_RC_SCRIPT="${DIR_RC_SCRIPTS}/${PGSQL_RC_SCRIPT_NAME}"
+
+# ~/.pgpass
+export PGSQL_DOT_PGPASS="${PGSQL_USER_HOMEDIR}/.pgpass"
+
+# SSL cert/key
+export PGSQL_SSL_CERT="${SSL_CERT_DIR}/iRedMail_CA_PostgreSQL.pem"
+export PGSQL_SSL_KEY="${SSL_KEY_DIR}/iRedMail_PostgreSQL.key"
+
+# Commands
+export PGSQL_BIN_PG_DUMP='/usr/bin/pg_dump'
+export PGSQL_BIN_PG_DUMPALL='/usr/bin/pg_dumpall'
+if [ X"${DISTRO}" == X"FREEBSD" -o X"${DISTRO}" == X'OPENBSD' ]; then
+    export PGSQL_BIN_PG_DUMP='/usr/local/bin/pg_dump'
+    export PGSQL_BIN_PG_DUMPALL='/usr/local/bin/pg_dumpall'
+fi

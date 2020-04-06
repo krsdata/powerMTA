@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# web servers and PHP
+export PORT_HTTP="${PORT_HTTP:=80}"
+export HTTPS_PORT="${HTTPS_PORT:=443}"
+
+# store extra web applications
+export HTTPD_SERVERROOT='/opt/www'
+
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    # Web data.
+    export HTTPD_DOCUMENTROOT='/var/www/html'
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    # Web data.
+    export HTTPD_DOCUMENTROOT='/var/www/html'
+
+    # Daemon user.
+    export HTTPD_USER='www-data'
+    export HTTPD_GROUP='www-data'
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    # Daemon user.
+    export HTTPD_USER='www'
+    export HTTPD_GROUP='www'
+
+    # Web data.
+    export HTTPD_SERVERROOT='/usr/local/www'
+    export HTTPD_DOCUMENTROOT='/usr/local/www/htdocs'
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    # Daemon user.
+    export HTTPD_USER='www'
+    export HTTPD_GROUP='www'
+
+    # Web data.
+    export HTTPD_DOCUMENTROOT="/var/www/htdocs"
+
+fi
+
+[ X"${WEB_SERVER}" == X'NGINX' ] && . ${CONF_DIR}/nginx
+
+. ${CONF_DIR}/php

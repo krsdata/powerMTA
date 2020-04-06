@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Variables for Fail2ban and related.
+
+export FAIL2BAN_CONF_ROOT='/etc/fail2ban'
+export FAIL2BAN_RC_SCRIPT_NAME='fail2ban'
+
+if [ X"${DISTRO}" == X"FREEBSD" ]; then
+    export FAIL2BAN_CONF_ROOT='/usr/local/etc/fail2ban'
+    export FAIL2BAN_SOCKET='/var/run/fail2ban.sock'
+fi
+
+export FAIL2BAN_MAIN_CONF="${FAIL2BAN_CONF_ROOT}/fail2ban.conf"
+export FAIL2BAN_JAIL_CONF="${FAIL2BAN_CONF_ROOT}/jail.conf"
+export FAIL2BAN_JAIL_LOCAL_CONF="${FAIL2BAN_CONF_ROOT}/jail.local"
+export FAIL2BAN_JAIL_CONF_DIR="${FAIL2BAN_CONF_ROOT}/jail.d"
+export FAIL2BAN_FILTER_DIR="${FAIL2BAN_CONF_ROOT}/filter.d"
+export FAIL2BAN_ACTION_DIR="${FAIL2BAN_CONF_ROOT}/action.d"
+
+export FAIL2BAN_FILTER_POSTFIX="postfix.iredmail"
+export FAIL2BAN_FILTER_ROUNDCUBE="roundcube.iredmail"
+export FAIL2BAN_FILTER_DOVECOT="dovecot.iredmail"
+
+# Fail2ban logtarget: STDOUT STDERR SYSLOG file.
+# Default log file is /var/log/fail2ban.log.
+export FAIL2BAN_LOGTARGET='SYSLOG'
+export FAIL2BAN_DISABLED_SERVICES="${PORT_HTTP},${HTTPS_PORT},25,587,465,110,995,143,993,${MANAGESIEVE_PORT}"
+
+# Firewall command (fail2ban/action.d/[NAME].conf)
+if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
+    export FAIL2BAN_ACTION='iptables-multiport'
+
+    if [ X"${DISTRO_CODENAME}" == X'buster' ]; then
+        export FAIL2BAN_ACTION='nftables-multiport'
+    fi
+elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
+    # Use ipfw by default
+    export FAIL2BAN_ACTION='ipfw'
+
+    # Use pf if it's loaded.
+    if grep '^pf_load=.YES' /boot/defaults/loader.conf >/dev/null; then
+        export FAIL2BAN_ACTION='pf'
+    fi
+elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
+    export FAIL2BAN_ACTION='pf'
+fi

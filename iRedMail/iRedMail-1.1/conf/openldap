@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Variables for OpenLDAP and related. Refer to 'dialog/ldap_config.sh'.
+
+# OpenLDAP version number.
+export OPENLDAP_VERSION='2.4'
+
+# Support password verification with SSHA512. Require OpenLDAP-2.4.32 or later.
+export OPENLDAP_HAS_SHA2='YES'
+# Module name
+export OPENLDAP_MOD_PW_SHA2='pw-sha2'
+
+# LDAP service info.
+# LDAP_SERVER_HOST, LDAP_SERVER_PORT are defined in conf/global
+export LDAP_USE_TLS='NO'
+export LDAP_BIND='yes'
+export LDAP_BIND_VERSION='3'
+
+# OpenLDAP daemon user and group name.
+export SYS_USER_LDAP='ldap'
+export SYS_GROUP_LDAP='ldap'
+
+export OPENLDAP_RC_SCRIPT_NAME='slapd'
+
+# Configuration files.
+export OPENLDAP_CONF_ROOT='/etc/openldap'
+
+# Database backend type.
+export OPENLDAP_DEFAULT_DBTYPE='mdb'
+
+# Default LDAP data directory.
+export OPENLDAP_DATA_DIR='/var/lib/ldap'    # Do *NOT* end with '/'.
+
+export OPENLDAP_PID_FILE='/var/run/openldap/slapd.pid'
+export OPENLDAP_ARGS_FILE='/var/run/openldap/slapd.args'
+
+# Configure.
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    export OPENLDAP_SYSCONFIG_CONF="${ETC_SYSCONFIG_DIR}/slapd"
+
+    # Module related.
+    export OPENLDAP_MODULE_PATH='/usr/lib/openldap'
+    if [ X"${OS_ARCH}" == X'x86_64' ]; then
+        export OPENLDAP_MODULE_PATH='/usr/lib64/openldap'
+    fi
+
+    export OPENLDAP_HAS_SHA2='NO'
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    # LDAP daemon user & group.
+    export SYS_USER_LDAP='openldap'
+    export SYS_GROUP_LDAP='openldap'
+
+    # Configuration files.
+    export OPENLDAP_CONF_ROOT="/etc/ldap"
+
+    export OPENLDAP_PID_FILE='/var/run/slapd/slapd.pid'
+    export OPENLDAP_ARGS_FILE='/var/run/slapd/slapd.args'
+
+    export OPENLDAP_SYSCONFIG_CONF="${ETC_SYSCONFIG_DIR}/slapd"
+
+    # Module related.
+    export OPENLDAP_MODULE_PATH='/usr/lib/ldap'
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    # Configuration files.
+    export OPENLDAP_CONF_ROOT='/usr/local/etc/openldap'
+
+    # Module related.
+    export OPENLDAP_MODULE_PATH='/usr/local/libexec/openldap'
+
+    # Override default setting.
+    export OPENLDAP_DATA_DIR='/var/db/openldap-data'    # Do *NOT* end with '/'.
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    # LDAP daemon user & group.
+    export SYS_USER_LDAP='_openldap'
+    export SYS_GROUP_LDAP='_openldap'
+
+    # mdb is not available on OpenBSD.
+    export OPENLDAP_DEFAULT_DBTYPE='hdb'
+
+    export OPENLDAP_DB_CONFIG_SAMPLE='/usr/local/share/examples/openldap/DB_CONFIG'
+
+    # Module related.
+    export OPENLDAP_HAS_SHA2='NO'
+    export OPENLDAP_MODULE_PATH='/usr/local/libexec/openldap'
+fi
+
+# RC script.
+export OPENLDAP_RC_SCRIPT="${DIR_RC_SCRIPTS}/${OPENLDAP_RC_SCRIPT_NAME}"
+
+export OPENLDAP_SCHEMA_DIR="${OPENLDAP_CONF_ROOT}/schema"
+export OPENLDAP_SLAPD_CONF="${OPENLDAP_CONF_ROOT}/slapd.conf"
+export OPENLDAP_LDAP_CONF="${OPENLDAP_CONF_ROOT}/ldap.conf"
+
+# Log
+# OpenLDAP logs to local4 by default.
+export OPENLDAP_SYSLOG_FACILITY='local4'
+export OPENLDAP_LOG_DIR='/var/log/openldap'
+export OPENLDAP_LOG_FILE="${OPENLDAP_LOG_DIR}/openldap.log"
+export OPENLDAP_LOGROTATE_FILE="${LOGROTATE_DIR}/openldap"
+
+# LDAP data directory.
+export ldap_suffix_to_domain_name="$(echo ${LDAP_SUFFIX} | sed -e 's/dc=//g' -e 's/,/./g')"
+export LDAP_DATA_DIR="${OPENLDAP_DATA_DIR}/${ldap_suffix_to_domain_name}"
+
+# Setting for one instance. You can edit ${OPENLDAP_SLAPD_CONF} manually to hold
+# multi instances.
+export LDAP_INIT_LDIF="${RUNTIME_DIR}/ldap_init.ldif"
+
+##################################################
+# iRedMail LDAP schema related
+#
+export LDAP_IREDMAIL_SCHEMA="${SAMPLE_DIR}/iredmail/iredmail.schema"
+
+# Domain admin related.
+export LDAP_ATTR_DOMAINADMIN_DN_NAME='domainAdmins'
+
+# Container which includes all mail accounts: o=domains,dc=xx,dc=xx
+export LDAP_BASEDN_NAME='domains'
+
+# Domain related attributes.
+export LDAP_ATTR_DOMAIN_RDN='domainName'
+
+# Group related.
+export LDAP_ATTR_GROUP_RDN='ou'
+export LDAP_ATTR_GROUP_USERS='Users'
+export LDAP_ATTR_GROUP_GROUPS='Groups'
+export LDAP_ATTR_GROUP_ALIASES='Aliases'
+export LDAP_ATTR_GROUP_EXTERNALS='Externals'
+
+# Attributes of user object.
+export LDAP_ATTR_USER_RDN='mail'
+
+##################################################
+# Password scheme
+#
+# If no pw-sha2 support, use SSHA instead.
+if [ X"${BACKEND}" == X'OPENLDAP' -a X"${OPENLDAP_HAS_SHA2}" != X'YES' ]; then
+    export DEFAULT_PASSWORD_SCHEME='SSHA'
+fi
+
+export LDAP_BINDDN="cn=${SYS_USER_VMAIL},${LDAP_SUFFIX}"
+export LDAP_ADMIN_DN="cn=${VMAIL_DB_ADMIN_USER},${LDAP_SUFFIX}"
+export LDAP_ROOTDN="cn=Manager,${LDAP_SUFFIX}"
+export LDAP_BASEDN="o=${LDAP_BASEDN_NAME},${LDAP_SUFFIX}"
+export LDAP_ADMIN_BASEDN="o=${LDAP_ATTR_DOMAINADMIN_DN_NAME},${LDAP_SUFFIX}"

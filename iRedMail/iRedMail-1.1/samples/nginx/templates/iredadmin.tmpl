@@ -1,0 +1,35 @@
+# Settings for iRedAdmin.
+
+# static files under /iredadmin/static
+location ~ ^/iredadmin/static/(.*) {
+    alias PH_IREDADMIN_HTTPD_ROOT_SYMBOL_LINK/static/$1;
+}
+
+# Python scripts
+location ~ ^/iredadmin(.*) {
+    rewrite ^/iredadmin(/.*)$ $1 break;
+
+    include PH_NGINX_CONF_TMPL_DIR/hsts.tmpl;
+
+    include uwsgi_params;
+    uwsgi_pass PH_IREDADMIN_BIND_ADDRESS:PH_IREDADMIN_LISTEN_PORT;
+    uwsgi_param UWSGI_CHDIR PH_IREDADMIN_HTTPD_ROOT_SYMBOL_LINK;
+    uwsgi_param UWSGI_SCRIPT iredadmin;
+    uwsgi_param SCRIPT_NAME /iredadmin;
+
+    # Access control
+    #allow 127.0.0.1;
+    #allow 192.168.1.10;
+    #allow 192.168.1.0/24;
+    #deny all;
+}
+
+# iRedAdmin: redirect /iredadmin to /iredadmin/
+location = /iredadmin {
+    rewrite ^ /iredadmin/;
+}
+
+# Handle newsletter-style subscription/unsubscription supported in iRedAdmin-Pro.
+location ~ ^/newsletter/ {
+    rewrite /newsletter/(.*) /iredadmin/newsletter/$1 last;
+}

@@ -1,0 +1,30 @@
+#
+# Running Roundcube as a subfolder on an existing virtual host
+#
+# Block access to default directories and files under these directories
+location ~ ^/mail/(bin|config|installer|logs|SQL|temp|vendor)($|/.*) { deny all; }
+
+# Block access to default files under top-directory and files start with same name.
+location ~ ^/mail/(CHANGELOG|composer.json|INSTALL|jsdeps.json|LICENSE|README|UPGRADING)($|.*) { deny all; }
+
+# Block plugin config files and sample config files.
+location ~ ^/mail/plugins/.*/config.inc.php.* { deny all; }
+
+# Block access to plugin data
+location ~ ^/mail/plugins/enigma/home($|/.*) { deny all; }
+
+# Redirect URI `/mail` to `/mail/`.
+location = /mail {
+    return 301 /mail/;
+}
+
+location ~ ^/mail/(.*\.php)$ {
+    include PH_NGINX_CONF_TMPL_DIR/hsts.tmpl;
+    include PH_NGINX_CONF_TMPL_DIR/fastcgi_php.tmpl;
+    fastcgi_param SCRIPT_FILENAME PH_RCM_HTTPD_ROOT_SYMBOL_LINK/$1;
+}
+
+location ~ ^/mail/(.*) {
+    alias PH_RCM_HTTPD_ROOT_SYMBOL_LINK/$1;
+    index index.php;
+}

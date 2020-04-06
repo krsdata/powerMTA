@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Official SOGo package repo.
+export SOGO_PKG_MIRROR="${SOGO_PKG_MIRROR:=https://packages.inverse.ca}"
+# APT key of SOGo official apt repo: 0x810273C4.
+export SOGO_PKG_MIRROR_APT_KEY="${SOGO_PKG_MIRROR_APT_KEY:=0x810273C4}"
+
+# Major SOGo version number: 3, 4.
+export SOGO_VERSION='4'
+
+export SYS_USER_SOGO='sogo'
+export SYS_GROUP_SOGO='sogo'
+
+export SOGO_PID_FILE='/var/run/sogo/sogo.pid'
+export SOGO_LOG_FILE='/var/log/sogo/sogo.log'
+
+export SOGO_CONF_DIR='/etc/sogo'
+export SOGO_SIEVE_MASTER_USER="${SOGO_SIEVE_MASTER_USER:=sogo_sieve_master}"
+export SOGO_RC_SCRIPT_NAME='sogod'
+
+# SOGo deamon listens on port 127.0.0.1:20000 by default.
+export SOGO_BIND_ADDRESS="${LOCAL_ADDRESS:=127.0.0.1}"
+export SOGO_BIND_PORT='20000'
+
+# SMTP port used by SOGo for smtp auth without SSL/TLS support.
+#
+# SOGo doesn't support SMTP auth over TLS or SSL, so if SOGo and Postfix are
+# running on different servers, SOGo needs another smtp port to send email.
+export SOGO_SMTP_PORT="${SOGO_SMTP_PORT:=1025}"
+
+# SOGo proxy timeout (in seconds)
+export SOGO_PROXY_TIMEOUT='3540'
+
+# SOGo SQL database.
+export SOGO_DB_NAME='sogo'
+export SOGO_DB_USER='sogo'
+export SOGO_DB_VIEW_AUTH='users'
+export SOGO_DB_VIEW_ALIASES='aliases'
+export SOGO_DB_TABLE_USER_PROFILE='sogo_user_profile'
+export SOGO_DB_TABLE_FOLDER_INFO='sogo_folder_info'
+export SOGO_DB_TABLE_SESSIONS_FOLDER='sogo_sessions_folder'
+export SOGO_DB_TABLE_ALARMS='sogo_alarms_folder'
+export SOGO_DB_TABLE_STORE='sogo_store'
+export SOGO_DB_TABLE_ACL='sogo_acl'
+export SOGO_DB_TABLE_CACHE_FOLDER='sogo_cache_folder'
+
+export SOGO_CMD_TOOL='/usr/sbin/sogo-tool'
+export SOGO_CMD_EALARMS_NOTIFY='/usr/sbin/sogo-ealarms-notify'
+export SOGO_GNUSTEP_DIR="/usr/lib/GNUstep/SOGo"
+
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    if [ X"${OS_ARCH}" == X'x86_64' ]; then
+        export SOGO_GNUSTEP_DIR="/usr/lib64/GNUstep/SOGo"
+    fi
+
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    export SOGO_RC_SCRIPT_NAME='sogo'
+
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export SYS_USER_SOGO='sogod'
+    export SYS_GROUP_SOGO='sogod'
+
+    export SOGO_GNUSTEP_DIR='/usr/local/GNUstep/Local/Library/SOGo'
+    export SOGO_RC_SCRIPT_NAME='sogod'
+    export SOGO_CONF_DIR='/usr/local/etc/sogo'
+
+    export SOGO_CMD_TOOL='/usr/local/GNUstep/Local/Tools/Admin/sogo-tool'
+    export SOGO_CMD_EALARMS_NOTIFY='/usr/local/GNUstep/Local/Tools/Admin/sogo-ealarms-notify'
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export SYS_USER_SOGO='_sogo'
+    export SYS_GROUP_SOGO='_sogo'
+
+    export SOGO_GNUSTEP_DIR='/usr/local/lib/GNUstep/SOGo'
+    export SOGO_CMD_TOOL='/usr/local/sbin/sogo-tool'
+    export SOGO_CMD_EALARMS_NOTIFY='/usr/local/sbin/sogo-ealarms-notify'
+fi
+
+export SOGO_CONF="${SOGO_CONF_DIR}/sogo.conf"
+export SOGO_SIEVE_CREDENTIAL_FILE="${SOGO_CONF_DIR}/sieve.cred"
+export CRON_FILE_SOGO="${CRON_SPOOL_DIR}/${SYS_USER_SOGO}"
+
+if [ X"${BACKEND}" == X'OPENLDAP' -o X"${BACKEND}" == X'MYSQL' ]; then
+    export SOGO_DB_TYPE='mysql'
+elif [ X"${BACKEND}" == X'PGSQL' ]; then
+    export SOGO_DB_TYPE='postgresql'
+fi
+
+# Script used to backup SOGo data.
+export BACKUP_SCRIPT_SOGO="${BACKUP_DIR}/backup_sogo.sh"

@@ -1,0 +1,192 @@
+Admin of domain dnshookup.com:
+
+    * Account: postmaster@dnshookup.com
+    * Password: Qazwsx2020
+
+    You can login to iRedAdmin with this account, login name is full email address.
+
+First mail user:
+    * Username: postmaster@dnshookup.com
+    * Password: Qazwsx2020
+    * SMTP/IMAP auth type: login
+    * Connection security: STARTTLS or SSL/TLS
+
+    You can login to webmail with this account, login name is full email address.
+
+* Enabled services:  rsyslog firewalld postfix mariadb nginx php-fpm dovecot clamd@amavisd amavisd fail2ban crond
+
+
+SSL cert keys (size: 2048):
+    - /etc/pki/tls/certs/iRedMail.crt
+    - /etc/pki/tls/private/iRedMail.key
+
+Mail Storage:
+    - Mailboxes: /var/vmail/vmail1
+    - Mailbox indexes: 
+    - Global sieve filters: /var/vmail/sieve
+    - Backup scripts and backup copies: /var/vmail/backup
+
+Nginx:
+    * Configuration files:
+        - /etc/nginx/nginx.conf
+        - /etc/nginx/sites-available/00-default.conf
+        - /etc/nginx/sites-available/00-default-ssl.conf
+    * Directories:
+        - /etc/nginx
+        - /var/www/html
+    * See also:
+        - /var/www/html/index.html
+
+php-fpm:
+    * Configuration files: /etc/php-fpm.d/www.conf
+
+PHP:
+    * PHP config file for Nginx: 
+    * Disabled functions: posix_uname,eval,pcntl_wexitstatus,posix_getpwuid,xmlrpc_entity_decode,pcntl_wifstopped,pcntl_wifexited,pcntl_wifsignaled,phpAds_XmlRpc,pcntl_strerror,ftp_exec,pcntl_wtermsig,mysql_pconnect,proc_nice,pcntl_sigtimedwait,posix_kill,pcntl_sigprocmask,fput,phpinfo,system,phpAds_remoteInfo,ftp_login,inject_code,posix_mkfifo,highlight_file,escapeshellcmd,show_source,pcntl_wifcontinued,fp,pcntl_alarm,pcntl_wait,ini_alter,posix_setpgid,parse_ini_file,ftp_raw,pcntl_waitpid,pcntl_getpriority,ftp_connect,pcntl_signal_dispatch,pcntl_wstopsig,ini_restore,ftp_put,passthru,proc_terminate,posix_setsid,pcntl_signal,pcntl_setpriority,phpAds_xmlrpcEncode,pcntl_exec,ftp_nb_fput,ftp_get,phpAds_xmlrpcDecode,pcntl_sigwaitinfo,shell_exec,pcntl_get_last_error,ftp_rawlist,pcntl_fork,posix_setuid
+
+MySQL:
+    * Root user: root, Password: "Qazwsx@123!" (without quotes)
+    * Bind account (read-only):
+        - Username: vmail, Password: kKhTqmLCl5Uxo80GfMvHRGH3XCVgec
+    * Vmail admin account (read-write):
+        - Username: vmailadmin, Password: G0FR0J8HYy2A9peBANtevoktQBBZ06
+    * Config file: /etc/my.cnf
+    * RC script: /etc/init.d/mariadb
+
+Virtual Users:
+    - /home/iRedMail-1.1/samples/iredmail/iredmail.mysql
+    - /home/iRedMail-1.1/runtime/*.sql
+
+Backup MySQL database:
+    * Script: /var/vmail/backup/backup_mysql.sh
+    * See also:
+        # crontab -l -u root
+
+Postfix:
+    * Configuration files:
+        - /etc/postfix
+        - /etc/postfix/aliases
+        - /etc/postfix/main.cf
+        - /etc/postfix/master.cf
+
+    * SQL/LDAP lookup config files:
+        - /etc/postfix/mysql
+
+Dovecot:
+    * Configuration files:
+        - /etc/dovecot/dovecot.conf
+        - /etc/dovecot/dovecot-ldap.conf (For OpenLDAP backend)
+        - /etc/dovecot/dovecot-mysql.conf (For MySQL backend)
+        - /etc/dovecot/dovecot-pgsql.conf (For PostgreSQL backend)
+        - /etc/dovecot/dovecot-used-quota.conf (For real-time quota usage)
+        - /etc/dovecot/dovecot-share-folder.conf (For IMAP sharing folder)
+    * Syslog config file:
+        - /etc/rsyslog.d/1-iredmail-dovecot.conf (present if rsyslog >= 8.x)
+    * RC script: /etc/init.d/dovecot
+    * Log files:
+        - /var/log/dovecot/dovecot.log
+        - /var/log/dovecot/sieve.log
+        - /var/log/dovecot/lmtp.log
+        - /var/log/dovecot/lda.log (present if rsyslog >= 8.x)
+        - /var/log/dovecot/imap.log (present if rsyslog >= 8.x)
+        - /var/log/dovecot/pop3.log (present if rsyslog >= 8.x)
+        - /var/log/dovecot/sieve.log (present if rsyslog >= 8.x)
+    * See also:
+        - /var/vmail/sieve/dovecot.sieve
+        - Logrotate config file: /etc/logrotate.d/dovecot
+
+ClamAV:
+    * Configuration files:
+        - /etc/clamd.d/amavisd.conf
+        - /etc/freshclam.conf
+        - /etc/logrotate.d/clamav
+    * RC scripts:
+            + /etc/init.d/clamd@amavisd
+            + /etc/init.d/freshclamd
+
+Amavisd-new:
+    * Configuration files:
+        - /etc/amavisd/amavisd.conf
+        - /etc/postfix/master.cf
+        - /etc/postfix/main.cf
+    * RC script:
+        - /etc/init.d/amavisd
+    * SQL Database:
+        - Database name: amavisd
+        - Database user: amavisd
+        - Database password: ad2reNlwYf29FssBq3ixb5EK9bQNN4
+
+DNS record for DKIM support:
+
+; key#1 1024 bits, i=dkim, d=dnshookup.com, /var/lib/dkim/dnshookup.com.pem
+dkim._domainkey.dnshookup.com.	3600 TXT (
+  "v=DKIM1; p="
+  "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC0thpw64sLQxWZCQIgXxmHDaQm"
+  "DcOBd0IaKsidkjsN0QmR2g0udmVD55srv2sYxrcYAzzzSEbQPgLbQs5J0afxHy8T"
+  "b1o/vBf6hEeDEEDtxK2T7au07c2Wn4qIfzx7XOkgxCUkQarvZIZKkw2emb89jRKi"
+  "Yvf3vDAAoNJxloN3HwIDAQAB")
+SpamAssassin:
+    * Configuration files and rules:
+        - /etc/mail/spamassassin
+        - /etc/mail/spamassassin/local.cf
+
+iRedAPD - Postfix Policy Server:
+    * Version: 3.4
+    * Listen address: 127.0.0.1, port: 7777
+    * SQL database account:
+        - Database name: iredapd
+        - Username: iredapd
+        - Password: wgXJjG9Wh2v3O1VWiYNKFrGwiYIRLS
+    * Configuration file:
+        - /opt/iredapd/settings.py
+    * Related files:
+        - /opt/iRedAPD-3.4
+        - /opt/iredapd (symbol link to /opt/iRedAPD-3.4
+
+iRedAdmin - official web-based admin panel:
+    * Version: 1.0
+    * Root directory: /opt/www/iRedAdmin-1.0
+    * Config file: /opt/www/iRedAdmin-1.0/settings.py
+    * Web access:
+        - URL: https://mail.dnshookup.com/iredadmin/
+        - Username: postmaster@dnshookup.com
+        - Password: Qazwsx2020
+    * SQL database:
+        - Database name: iredadmin
+        - Username: iredadmin
+        - Password: 5wN34edn0zz3RGVEljYSbzl7j9lUlO
+
+Roundcube webmail: /opt/www/roundcubemail-1.4.2
+    * Config file: /opt/www/roundcubemail-1.4.2/config
+    * Web access:
+        - URL: http://mail.dnshookup.com/mail/ (will be redirected to https:// site)
+        - URL: https://mail.dnshookup.com/mail/ (secure connection)
+        - Username: postmaster@dnshookup.com
+        - Password: Qazwsx2020
+    * SQL database account:
+        - Database name: roundcubemail
+        - Username: roundcube
+        - Password: EOKQBswggTM6mG47C9GiRUxSPHptnl
+    * Cron job:
+        - Command: "crontab -l -u root"
+
+netdata (monitor):
+    - Config files:
+        - All config files: /opt/netdata/etc/netdata
+        - Main config file: /opt/netdata/etc/netdata/netdata.conf
+        - Modified modular config files:
+            - /opt/netdata/etc/netdata/go.d
+            - /opt/netdata/etc/netdata/python.d
+    - HTTP auth file (if you need a new account to access netdata, please
+      update this file with command like 'htpasswd' or edit manually):
+        - /etc/nginx/netdata.users
+    - Log directory: /opt/netdata/var/log/netdata
+    - SQL:
+        - Username: netdata
+        - Password: 4AQIMpE2g3jfz9JtqG7r6BN7vOifqU
+        - NOTE: No database required by netdata.
+
+* Enabled services:  rsyslog firewalld postfix mariadb nginx php-fpm dovecot clamd@amavisd amavisd fail2ban crond
+
+* Enabled services:  rsyslog firewalld postfix mariadb nginx php-fpm dovecot clamd@amavisd amavisd fail2ban crond
+

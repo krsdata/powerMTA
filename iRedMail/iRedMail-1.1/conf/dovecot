@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# ----------------------------------------
+# For Dovecot and dovecot-sieve.
+# ----------------------------------------
+
+# Major version number of Dovecot package: 2.2, 2.3.
+export DOVECOT_VERSION='2.2'
+
+# Dovecot user & group.
+export SYS_USER_DOVECOT='dovecot'
+export SYS_GROUP_DOVECOT='dovecot'
+export DOVECOT_RC_SCRIPT_NAME='dovecot'
+
+export DOVECOT_BIN='/usr/sbin/dovecot'
+export DOVECOT_DOVEADM_BIN='/usr/bin/doveadm'
+export DOVECOT_SIEVEC='/usr/libexec/dovecot/sievec'
+
+# Dovecot running directory, required by dovecot-2.x.
+export DOVECOT_BASE_DIR='/var/run/dovecot'
+
+# Enabled plugins for protocol 'lda' and 'imap'.
+export DOVECOT_LDA_PLUGINS='quota sieve autocreate'
+export DOVECOT_IMAP_PLUGINS='quota imap_quota autocreate'
+
+# Default quota type: maildir, dict:user::proxy::quotadict (quotadict).
+export DOVECOT_QUOTA_TYPE='dict:user::proxy::quotadict'
+
+# Do not starts with dot (.).
+export SIEVE_RULE_FILENAME='dovecot.sieve'
+export DOVECOT_GLOBAL_SIEVE_FILE="${SIEVE_DIR}/${SIEVE_RULE_FILENAME}"
+
+# Directory used to store Dovecot config files
+export DOVECOT_CONF_DIR='/etc/dovecot'
+export DOVECOT_CONF_INCLUDE_DIR='/etc/dovecot/iredmail'
+
+# Path to Dovecot deliver agant
+export DOVECOT_DELIVER_BIN='/usr/libexec/dovecot/deliver'
+
+# main log file
+export DOVECOT_LOG_DIR='/var/log/dovecot'
+export DOVECOT_LOG_FILE="${DOVECOT_LOG_DIR}/dovecot.log"
+# Log files when we use Dovecot internal log system
+export DOVECOT_SIEVE_LOG_FILE="${DOVECOT_LOG_DIR}/sieve.log"
+export DOVECOT_LMTP_LOG_FILE="${DOVECOT_LOG_DIR}/lmtp.log"
+# Log files when we use syslog
+export DOVECOT_SYSLOG_FILE_LDA="${DOVECOT_LOG_DIR}/lda.log"
+export DOVECOT_SYSLOG_FILE_IMAP="${DOVECOT_LOG_DIR}/imap.log"
+export DOVECOT_SYSLOG_FILE_POP3="${DOVECOT_LOG_DIR}/pop3.log"
+export DOVECOT_SYSLOG_FILE_SIEVE="${DOVECOT_LOG_DIR}/sieve.log"
+
+# Log rotate config file
+export DOVECOT_LOGROTATE_FILE="${LOGROTATE_DIR}/dovecot"
+
+if [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    export DOVECOT_DELIVER_BIN='/usr/lib/dovecot/deliver'
+
+    [ X"${DISTRO_CODENAME}" == X'buster' ] && export DOVECOT_VERSION='2.3'
+elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+    export DOVECOT_VERSION='2.3'
+    export DOVECOT_CONF_DIR='/usr/local/etc/dovecot'
+    export DOVECOT_DELIVER_BIN='/usr/local/libexec/dovecot/deliver'
+    export DOVECOT_DOVEADM_BIN='/usr/local/bin/doveadm'
+    export DOVECOT_CONF_INCLUDE_DIR='/usr/local/etc/dovecot/iredmail'
+
+elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+    export DOVECOT_VERSION='2.3'
+    export SYS_USER_DOVECOT='_dovecot'
+    export SYS_GROUP_DOVECOT='_dovecot'
+    export DOVECOT_DELIVER_BIN='/usr/local/libexec/dovecot/deliver'
+    export DOVECOT_DOVEADM_BIN='/usr/local/bin/doveadm'
+fi
+
+# Dovecot config files
+export DOVECOT_CONF="${DOVECOT_CONF_DIR}/dovecot.conf"
+export DOVECOT_LDAP_CONF="${DOVECOT_CONF_DIR}/dovecot-ldap.conf"
+export DOVECOT_MYSQL_CONF="${DOVECOT_CONF_DIR}/dovecot-mysql.conf"
+export DOVECOT_PGSQL_CONF="${DOVECOT_CONF_DIR}/dovecot-pgsql.conf"
+export DOVECOT_REALTIME_QUOTA_CONF="${DOVECOT_CONF_DIR}/dovecot-used-quota.conf"
+export DOVECOT_SHARE_FOLDER_CONF="${DOVECOT_CONF_DIR}/dovecot-share-folder.conf"
+export DOVECOT_LAST_LOGIN_CONF="${DOVECOT_CONF_DIR}/dovecot-last-login.conf"
+export DOVECOT_MASTER_USER_PASSWORD_FILE="${DOVECOT_CONF_DIR}/dovecot-master-users"
+export DOVECOT_MASTER_USER_DOMAIN="${DOVECOT_MASTER_USER_DOMAIN:=not-exist.com}"
+
+# Dovecot auth socket and pid file.
+# Relative path of Dovecot auth socket under Postfix chroot directory.
+export DOVECOT_SASL_AUTH_SOCKET='private/dovecot-auth'
+export DOVECOT_AUTH_MASTER_PATH="${DOVECOT_BASE_DIR}/auth-master"
+export DOVECOT_MASTER_PID="${DOVECOT_BASE_DIR}/master.pid"
+
+# Protocols.
+export DOVECOT_PROTOCOLS="pop3 imap sieve lmtp"
+
+# Plugin: Expire.
+# NOTE: dict process currently runs as root, so this file will be owned as root.
+export DOVECOT_EXPIRE_DICT_BDB='/var/lib/dovecot/expire/expire.db'
+
+# Plugin: quota warning.
+export DOVECOT_QUOTA_WARNING_SCRIPT='/usr/local/bin/dovecot-quota-warning.sh'
+# Plugin: share folder.
+export DOVECOT_SHARE_FOLDER_DB_TABLE='share_folder'
+export DOVECOT_SHARE_FOLDER_ANYONE_DB_TABLE='anyone_shares'
+export DOVECOT_REALTIME_QUOTA_TABLE='used_quota'
+
+if [ X"${BACKEND}" == X'OPENLDAP' -o X"${BACKEND}" == X'MYSQL' ]; then
+    export DOVECOT_SQL_DBN='mysql'
+elif [ X"${BACKEND}" == X'PGSQL' ]; then
+    export DOVECOT_SQL_DBN='pgsql'
+fi
+
+# Plugin: stats
+export DOVECOT_SERVICE_STATS_USER="${SYS_USER_VMAIL}"
+export DOVECOT_SERVICE_STATS_GROUP="${SYS_GROUP_VMAIL}"
+export DOVECOT_SERVICE_STATS_PORT='24242'
+# FYI: https://wiki.dovecot.org/Quota#Quota_service
+export DOVECOT_SERVICE_QUOTA_STATUS_PORT='12340'
+
+# Local (Mail) Delivery Agent
+#   - dovecot
+#   - lmtp:unix:private/dovecot-lmtp
+#   - lmtp:inet:<ip>:<port>
+export DOVECOT_LDA_DELIVER='dovecot'
+
+# Directory used to store mailbox INDEX files
+# - '' (empty value): use mailbox as index directory.
+# - '/path/to/dir': specify an absolute path as index directory.
+export MAILBOX_INDEX_DIR="${MAILBOX_INDEX_DIR:=}"

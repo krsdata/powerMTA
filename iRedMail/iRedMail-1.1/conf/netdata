@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+#
+# netdata: https://my-netdata.io
+#
+export NETDATA_VERSION='1.19.0'
+export NETDATA_PKG_NAME="netdata-v${NETDATA_VERSION}.gz.run"
+
+# iRedMail install netdata with the '.bin' package on Linux, it installs
+# netdata application files under '/opt/netdata' by default.
+# Directory contains all config files
+export NETDATA_CONF_DIR="/opt/netdata/etc/netdata"
+
+# Log directory
+export NETDATA_LOG_DIR="/opt/netdata/var/log/netdata"
+
+if [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
+    export NETDATA_CONF_DIR='/usr/local/etc/netdata'
+    export NETDATA_LOG_DIR='/var/log/netdata'
+fi
+
+export NETDATA_PORT='19999'
+export NETDATA_RC_SCRIPT_NAME='netdata'
+
+# Main config file.
+export NETDATA_CONF="${NETDATA_CONF_DIR}/netdata.conf"
+export NETDATA_HEALTH_ALARM_NOTIFY_CONF="${NETDATA_CONF_DIR}/health_alarm_notify.conf"
+export NETDATA_PYTHON_D_CONF="${NETDATA_CONF_DIR}/python.d.conf"
+export NETDATA_GO_D_CONF="${NETDATA_CONF_DIR}/go.d.conf"
+
+# web auth file
+export NETDATA_HTTPD_AUTH_FILE="${HTTPD_CONF_ROOT}/netdata.users"
+
+# .my.cnf used to access MySQL db.
+export NETDATA_DOT_MY_CNF="${NETDATA_CONF_DIR}/my.cnf"
+
+# Modular config files.
+export NETDATA_CONF_HEALTH_ALARM_NOTIFY="${NETDATA_CONF_DIR}/health_alarm_notify.conf"
+
+export NETDATA_GO_D_CONF_DIR="${NETDATA_CONF_DIR}/go.d"
+export NETDATA_GO_D_CONF_PHPFPM="${NETDATA_GO_D_CONF_DIR}/phpfpm.conf"
+export NETDATA_GO_D_CONF_NGINX="${NETDATA_GO_D_CONF_DIR}/nginx.conf"
+export NETDATA_GO_D_CONF_MYSQL="${NETDATA_GO_D_CONF_DIR}/mysql.conf"
+
+# Plugin config files.
+export NETDATA_PYTHON_D_CONF_DIR="${NETDATA_CONF_DIR}/python.d"
+export NETDATA_PYTHON_D_CONF_PGSQL="${NETDATA_PYTHON_D_CONF_DIR}/postgres.conf"
+export NETDATA_PYTHON_D_CONF_OPENLDAP="${NETDATA_PYTHON_D_CONF_DIR}/openldap.conf"
+
+# Database
+# NETDATA_DB_PASSWD is generated in dialog/optional_components.sh.
+export NETDATA_DB_USER='netdata'

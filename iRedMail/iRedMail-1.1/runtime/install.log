@@ -1,0 +1,322 @@
+[ INFO ] Checking new version of iRedMail ...
+ + < DEBUG > Creating necessary directories ...
+[ INFO ] Preparing yum repositories ...
+[ INFO ] Installing package(s): epel-release
+[ INFO ] Install package: perl
+[ INFO ] Installing package(s): perl
+[ INFO ] Fetching source tarballs ...
+[ INFO ] + 1 of 6: https://dl.iredmail.org/yum/misc/iRedAdmin-1.0.tar.bz2
+[ INFO ] + 2 of 6: https://dl.iredmail.org/yum/misc/mlmmjadmin-2.1.tar.gz
+[ INFO ] + 3 of 6: https://dl.iredmail.org/yum/misc/iRedAPD-3.4.tar.gz
+[ INFO ] + 4 of 6: https://dl.iredmail.org/yum/misc/netdata-v1.19.0.gz.run
+[ INFO ] + 5 of 6: https://dl.iredmail.org/yum/misc/roundcubemail-1.4.2-complete.tar.gz
+[ INFO ] + 6 of 6: https://dl.iredmail.org/yum/misc/webpy-0.40.tar.gz
+[ INFO ] Validate downloaded source tarballs ...
+[ INFO ] Install package: dialog
+[ INFO ] Installing package(s): dialog
+[ INFO ] Checking configuration file: /home/iRedMail-1.1/config ...
+[ INFO ] NOT FOUND. Launching installation wizard.
+[ INFO ] Installing package(s): rsyslog firewalld postfix mariadb mariadb-server perl-DBD-MySQL php-common php-fpm php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt nginx dovecot dovecot-pigeonhole dovecot-mysql amavisd-new spamassassin altermime perl-LDAP perl-Mail-SPF unrar pax lz4 clamav clamav-update clamav-server clamav-server-systemd mlmmj uwsgi-logger-syslog php-pear-Net-IDNA2 python-sqlalchemy python-setuptools python-dns MySQL-python python-jinja2 python-webpy python-netifaces python-pycurl python-requests py-bcrypt uwsgi uwsgi-plugin-python2 fail2ban curl libmnl libuuid lm_sensors nc PyYAML zlib iproute unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch lz4
+ + < DEBUG > Service control: enable rsyslog.
+ + < DEBUG > Service control: enable firewalld.
+ + < DEBUG > Service control: enable postfix.
+ + < DEBUG > Service control: enable mariadb.
+Created symlink from /etc/systemd/system/multi-user.target.wants/mariadb.service to /usr/lib/systemd/system/mariadb.service.
+ + < DEBUG > Service control: enable nginx.
+Created symlink from /etc/systemd/system/multi-user.target.wants/nginx.service to /usr/lib/systemd/system/nginx.service.
+ + < DEBUG > Service control: enable php-fpm.
+Created symlink from /etc/systemd/system/multi-user.target.wants/php-fpm.service to /usr/lib/systemd/system/php-fpm.service.
+ + < DEBUG > Service control: enable dovecot.
+Created symlink from /etc/systemd/system/multi-user.target.wants/dovecot.service to /usr/lib/systemd/system/dovecot.service.
+ + < DEBUG > Service control: enable clamd@amavisd.
+Created symlink from /etc/systemd/system/multi-user.target.wants/clamd@amavisd.service to /usr/lib/systemd/system/clamd@.service.
+ + < DEBUG > Service control: enable amavisd.
+Created symlink from /etc/systemd/system/multi-user.target.wants/amavisd.service to /usr/lib/systemd/system/amavisd.service.
+ + < DEBUG > Service control: enable fail2ban.
+Created symlink from /etc/systemd/system/multi-user.target.wants/fail2ban.service to /usr/lib/systemd/system/fail2ban.service.
+ + < DEBUG > Service control: enable crond.
+ + < DEBUG > Service control: disable exim.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable saslauthd.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable clamd.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable spamassassin.
+ + < DEBUG > Service control: disable shorewall.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin-python.
+Failed to execute operation: No such file or directory
+[ INFO ] Generate self-signed SSL cert (2048 bits, expire in 10 years).
+[ INFO ] Generate Diffie Hellman Group with openssl, please wait.
+[ INFO ] Create required system accounts.
+ + < DEBUG > Create system account: vmail:vmail (2000:2000).
+ + < DEBUG > Create system account: vmail:vmail.
+ + < DEBUG > Create directory used to store global sieve filters: /var/vmail/sieve.
+ + < DEBUG > Create system account: mlmmj:mlmmj.
+ + < DEBUG > Create system account: iredadmin:iredadmin.
+ + < DEBUG > Create system account: iredapd:iredapd.
+ + < DEBUG > Create system account: netdata:netdata.
+[ INFO ] Configure Nginx web server.
+[ INFO ] Configure PHP.
+ + < DEBUG > Hide PHP info from remote users requests: /etc/php.ini.
+ + < DEBUG > Increase 'memory_limit' to 256M: /etc/php.ini.
+ + < DEBUG > Increase 'upload_max_filesize', 'post_max_size' to 10/12M: /etc/php.ini.
+ + < DEBUG > Disable php extension: suhosin. /etc/php.ini.
+[ INFO ] Configure MariaDB database server.
+ + < DEBUG > Initialize MySQL server.
+ + < DEBUG > Stop MySQL service before initializing database or updating my.cnf.
+ + < DEBUG > Service control: stop mariadb.
+ + < DEBUG > Disable 'skip-networking' in my.cnf.
+ + < DEBUG > Set max_connections to 1024.
+ + < DEBUG > Enable 'innodb_file_per_table' in my.cnf.
+ + < DEBUG > Restart service: mariadb.
+ + < DEBUG > Service control: restart mariadb.
+ + < DEBUG > Sleep 10 seconds for MySQL daemon initialization ...
+Database
+information_schema
+mysql
+performance_schema
+test
+Password	char(41)	NO			
+ + < DEBUG > Generate defauts file for MySQL client option --defaults-file: /root/.my.cnf.
+ + < DEBUG > Delete anonymous database user.
+ + < DEBUG > Delete root access with empty passwords.
+ + < DEBUG > Delete root access with empty passwords.
+ + < DEBUG > Remove 'test' database.
+ + < DEBUG > Generate sample SQL templates.
+ + < DEBUG > Create database: vmail.
+ + < DEBUG > Initialize database: vmail.
+ + < DEBUG > Add first domain and postmaster@ user.
+[ INFO ] Setup daily cron job to backup SQL databases with /var/vmail/backup/backup_mysql.sh
+[ INFO ] Configure Postfix (MTA).
+ + < DEBUG > Enable chroot.
+ + < DEBUG > Enable submission and additional transports required by Amavisd and Dovecot.
+ + < DEBUG > Copy: /etc/{hosts,resolv.conf,localtime,services} -> /var/spool/postfix/etc/
+ + < DEBUG > Configure Postfix for SQL/LDAP lookup.
+ + < DEBUG > Enable postscreen service.
+ + < DEBUG > Comment out 'smtp inet ... smtpd' service in /etc/postfix/master.cf.
+ + < DEBUG > Uncomment the new 'smtpd pass ... smtpd' service in /etc/postfix/master.cf.
+ + < DEBUG > Uncomment the new smtp inet ... postscreen service in /etc/postfix/master.cf.
+ + < DEBUG > Uncomment the new 'tlsproxy unix ... tlsproxy' service in /etc/postfix/master.cf.
+ + < DEBUG > Uncomment the new 'dnsblog unix ... dnsblog' service in /etc/postfix/master.cf.
+ + < DEBUG > Update /etc/postfix/main.cf to enable postscreen.
+ + < DEBUG > Create /var/spool/postfix//var/lib/postfix/postscreen_cache.db.
+[ INFO ] Configure Dovecot (POP3/IMAP/Managesieve/LMTP/LDA).
+ + < DEBUG > Copy sample Dovecot config file to /etc/dovecot/dovecot.conf.
+ + < DEBUG > Configure dovecot: /etc/dovecot/dovecot.conf.
+ + < DEBUG > Copy global sieve filter rule file: /var/vmail/sieve/dovecot.sieve.
+ + < DEBUG > Enable dovecot SASL support in postfix: /etc/postfix/main.cf.
+ + < DEBUG > Create directory for Dovecot plugin: Expire.
+ + < DEBUG > Configure Dovecot logging.
+ + < DEBUG > Generate modular syslog and log rotate config files for dovecot log files.
+ + < DEBUG > Create dovecot log file: /var/log/dovecot/dovecot.log.
+ + < DEBUG > Create dovecot log file: /var/log/dovecot/lda.log.
+ + < DEBUG > Create dovecot log file: /var/log/dovecot/imap.log.
+ + < DEBUG > Create dovecot log file: /var/log/dovecot/pop3.log.
+ + < DEBUG > Create dovecot log file: /var/log/dovecot/sieve.log.
+[ INFO ] Configure mlmmj (mailing list manager).
+ + < DEBUG > Generate script: /usr/bin/mlmmj-amime-receive.
+ + < DEBUG > Create required directories: /var/vmail/mlmmj, /var/vmail/mlmmj-archive.
+ + < DEBUG > Setting cron job for mlmmj maintenance.
+ + < DEBUG > Enable mlmmj transport in postfix: /etc/postfix/main.cf.
+ + < DEBUG > Configure mlmmjadmin (RESTful API server used to manage mlmmj).
+ + < DEBUG > Extracting: mlmmjadmin-2.1.tar.gz -> /opt
+ + < DEBUG > Generate modular syslog and log rotate config files for mlmmjadmin.
+ + < DEBUG > Make mlmmjadmin starting after system startup.
+ + < DEBUG > Service control: enable mlmmjadmin.
+Created symlink from /etc/systemd/system/multi-user.target.wants/mlmmjadmin.service to /usr/lib/systemd/system/mlmmjadmin.service.
+[ INFO ] Configure ClamAV (anti-virus toolkit).
+ + < DEBUG > Configure ClamAV: /etc/clamd.d/amavisd.conf.
+ + < DEBUG > Configure freshclam: /etc/freshclam.conf.
+ + < DEBUG > Add clamav user to amavid group.
+ + < DEBUG > Set permission to 750: /var/spool/amavisd/tmp, /var/spool/amavisd/quarantine,
+[ INFO ] Configure Amavisd-new (interface between MTA and content checkers).
+ + < DEBUG > Generate DKIM pem files: /var/lib/dkim/dnshookup.com.pem.
+ + < DEBUG > Setting cron job for vmail user to delete virus mail per month.
+ + < DEBUG > Import Amavisd database and privileges.
+[ INFO ] Configure SpamAssassin (content-based spam filter).
+ + < DEBUG > Copy sample SpamAssassin config file: /home/iRedMail-1.1/samples/spamassassin/local.cf -> /etc/mail/spamassassin/local.cf.
+ + < DEBUG > Enable crontabs for SpamAssassin update.
+[ INFO ] Configure iRedAPD (postfix policy daemon).
+ + < DEBUG > Extracting: iRedAPD-3.4.tar.gz -> /opt
+ + < DEBUG > Configure iRedAPD.
+ + < DEBUG > Create symbol link: /opt/iredapd/rc_scripts/iredapd.service -> /lib/systemd/system/iredapd.service.
+ + < DEBUG > Make iredapd starting after system startup.
+ + < DEBUG > Service control: enable iredapd.
+Created symlink from /etc/systemd/system/multi-user.target.wants/iredapd.service to /usr/lib/systemd/system/iredapd.service.
+ + < DEBUG > Import iRedAPD database template.
+ + < DEBUG > Generate modular syslog and log rotate config files for iRedAPD.
+[ INFO ] Configure iRedAdmin (official web-based admin panel).
+ + < DEBUG > Extracting: iRedAdmin-1.0.tar.bz2 -> /opt/www
+ + < DEBUG > Set correct permission for iRedAdmin: /opt/www/iRedAdmin-1.0.
+ + < DEBUG > Import iRedAdmin database template.
+ + < DEBUG > Configure iRedAdmin.
+ + < DEBUG > Configure general settings.
+ + < DEBUG > Configure iredadmin database related settings.
+ + < DEBUG > Configure SQL mail accounts related settings.
+ + < DEBUG > Configure Amavisd related settings.
+ + < DEBUG > Configure iRedAPD related settings.
+ + < DEBUG > Make sure iredadmin starting after system startup.
+ + < DEBUG > Service control: enable iredadmin.
+Created symlink from /etc/systemd/system/multi-user.target.wants/iredadmin.service to /usr/lib/systemd/system/iredadmin.service.
+[ INFO ] Configure Roundcube webmail.
+ + < DEBUG > Extracting: roundcubemail-1.4.2-complete.tar.gz -> /opt/www
+ + < DEBUG > Set correct permission for Roundcubemail: /opt/www/roundcubemail-1.4.2.
+ + < DEBUG > Import SQL database and privileges for Roundcubemail.
+ + < DEBUG > Configure database for Roundcubemail: /opt/www/roundcubemail-1.4.2/config/*.
+ + < DEBUG > Setup daily cron job to keep SQL database clean.
+ + < DEBUG > Config plugin: managesieve.
+ + < DEBUG > Config plugin: password.
+ + < DEBUG > Config plugin: enigma.
+ + < DEBUG > Install netdata with package: netdata-v1.19.0.gz.run.
+[ INFO ] Configure netdata.
+ + < DEBUG > Service control: enable netdata.
+ + < DEBUG > Generate netdata config file: /home/iRedMail-1.1/samples/netdata/netdata.conf -> /opt/netdata/etc/netdata/netdata.conf.
+ + < DEBUG > Generate htpasswd file: /etc/nginx/netdata.users.
+ + < DEBUG > Generate config files for plugins.
+ + < DEBUG > Create MySQL user netdata with minimal privilege: USAGE.
+ + < DEBUG > Generate /opt/netdata/etc/netdata/go.d/mysql.conf.
+ + < DEBUG > Add sysctl parameters for better netdata performance.
+ + < DEBUG > Increase open files limit.
+[ INFO ] Configure Fail2ban (authentication failure monitor).
+ + < DEBUG > Log into syslog instead of log file.
+ + < DEBUG > Disable all default filters in /etc/fail2ban/jail.conf.
+ + < DEBUG > Create Fail2ban config file: /etc/fail2ban/jail.local.
+ + < DEBUG > Create Fail2ban directory: /etc/fail2ban/jail.d.
+ + < DEBUG > Copy modular Fail2ban jail config files to /etc/fail2ban/jail.d.
+ + < DEBUG > Copy sample Fail2ban filter config files.
+ + < DEBUG > Mail sensitive administration info to postmaster@dnshookup.com.
+ + < DEBUG > Set file permission to 0600: /var/spool/cron/root.
+ + < DEBUG > Set file permission to 0600: /var/spool/cron/amavis.
+[ INFO ] Disable SELinux in /etc/selinux/config.
+[ INFO ] Copy firewall sample rules.
+ + < DEBUG > Service control: enable firewalld.
+[ INFO ] Restarting firewall ...
+success
+[ INFO ] Copy MySQL sample file: /etc/my.cnf.
+[ INFO ] Enable SSL support for MySQL server.
+[ INFO ] Updating ClamAV database (freshclam), please wait ...
+ + < DEBUG > Send info of chosed packages to iRedMail team to help improve iRedMail:
+ + < DEBUG > 
+ + < DEBUG > 	MARIADB=YES
+ + < DEBUG > 	WEB_SERVER=NGINX
+ + < DEBUG > 	ROUNDCUBE=YES
+ + < DEBUG > 	SOGO=
+ + < DEBUG > 	NETDATA=YES
+ + < DEBUG > 	FAIL2BAN=YES
+ + < DEBUG > 	IREDADMIN=YES
+ + < DEBUG > 
+[ INFO ] Checking configuration file: /home/iRedMail-1.1/config ...
+[ INFO ] Use config file: /home/iRedMail-1.1/config for mail server setting.
+[ INFO ] Import installation process status from file: /home/iRedMail-1.1/runtime/install.status.
+[ INFO ] Installing package(s): rsyslog firewalld postfix mariadb mariadb-server perl-DBD-MySQL php-common php-fpm php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt nginx dovecot dovecot-pigeonhole dovecot-mysql amavisd-new spamassassin altermime perl-LDAP perl-Mail-SPF unrar pax lz4 clamav clamav-update clamav-server clamav-server-systemd mlmmj uwsgi-logger-syslog php-pear-Net-IDNA2 python-sqlalchemy python-setuptools python-dns MySQL-python python-jinja2 python-webpy python-netifaces python-pycurl python-requests py-bcrypt uwsgi uwsgi-plugin-python2 fail2ban curl libmnl libuuid lm_sensors nc PyYAML zlib iproute unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch lz4
+<< ERROR >> Installation failed, please check the terminal output.
+<< ERROR >> If you're not sure what the problem is, try to get help in iRedMail
+<< ERROR >> forum: https://forum.iredmail.org/
+[ INFO ] Checking configuration file: /home/iRedMail-1.1/config ...
+[ INFO ] Use config file: /home/iRedMail-1.1/config for mail server setting.
+[ INFO ] Import installation process status from file: /home/iRedMail-1.1/runtime/install.status.
+[ INFO ] Installing package(s): rsyslog firewalld postfix mariadb mariadb-server perl-DBD-MySQL php-common php-fpm php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt nginx dovecot dovecot-pigeonhole dovecot-mysql amavisd-new spamassassin altermime perl-LDAP perl-Mail-SPF unrar pax lz4 clamav clamav-update clamav-server clamav-server-systemd mlmmj uwsgi-logger-syslog php-pear-Net-IDNA2 python-sqlalchemy python-setuptools python-dns MySQL-python python-jinja2 python-webpy python-netifaces python-pycurl python-requests py-bcrypt uwsgi uwsgi-plugin-python2 fail2ban curl libmnl libuuid lm_sensors nc PyYAML zlib iproute unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch lz4
+ + < DEBUG > Service control: enable rsyslog.
+ + < DEBUG > Service control: enable firewalld.
+Created symlink from /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service to /usr/lib/systemd/system/firewalld.service.
+Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.service to /usr/lib/systemd/system/firewalld.service.
+ + < DEBUG > Service control: enable postfix.
+Created symlink from /etc/systemd/system/multi-user.target.wants/postfix.service to /usr/lib/systemd/system/postfix.service.
+ + < DEBUG > Service control: enable mariadb.
+ + < DEBUG > Service control: enable nginx.
+ + < DEBUG > Service control: enable php-fpm.
+Created symlink from /etc/systemd/system/multi-user.target.wants/php-fpm.service to /usr/lib/systemd/system/php-fpm.service.
+ + < DEBUG > Service control: enable dovecot.
+ + < DEBUG > Service control: enable clamd@amavisd.
+ + < DEBUG > Service control: enable amavisd.
+ + < DEBUG > Service control: enable fail2ban.
+ + < DEBUG > Service control: enable crond.
+ + < DEBUG > Service control: disable exim.
+Removed symlink /etc/systemd/system/multi-user.target.wants/exim.service.
+ + < DEBUG > Service control: disable saslauthd.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable clamd.
+Removed symlink /etc/systemd/system/multi-user.target.wants/clamd.service.
+ + < DEBUG > Service control: disable spamassassin.
+Removed symlink /etc/systemd/system/multi-user.target.wants/spamassassin.service.
+ + < DEBUG > Service control: disable shorewall.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin-python.
+Failed to execute operation: No such file or directory
+< SKIP > Function: after_package_installation.
+< SKIP > Function: generate_ssl_keys.
+[ INFO ] Create required system accounts.
+< SKIP > Function: add_user_vmail.
+< SKIP > Function: add_user_mlmmj.
+< SKIP > Function: add_user_iredadmin.
+< SKIP > Function: add_user_iredapd.
+< SKIP > Function: add_user_netdata.
+< SKIP > Function: web_server_config.
+< SKIP > Function: mysql_setup.
+< SKIP > Function: postfix_setup.
+< SKIP > Function: dovecot_setup.
+< SKIP > Function: mlmmj_config.
+< SKIP > Function: mlmmjadmin_config.
+< SKIP > Function: clamav_config.
+< SKIP > Function: amavisd_config.
+< SKIP > Function: sa_config.
+< SKIP > Function: iredapd_setup.
+< SKIP > Function: iredadmin_setup.
+< SKIP > Function: rcm_setup.
+< SKIP > Function: netdata_setup.
+< SKIP > Function: fail2ban_config.
+< SKIP > Function: cleanup.
+[ INFO ] Checking configuration file: /home/iRedMail-1.1/config ...
+[ INFO ] Use config file: /home/iRedMail-1.1/config for mail server setting.
+[ INFO ] Import installation process status from file: /home/iRedMail-1.1/runtime/install.status.
+[ INFO ] Installing package(s): rsyslog firewalld postfix mariadb mariadb-server perl-DBD-MySQL php-common php-fpm php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt nginx dovecot dovecot-pigeonhole dovecot-mysql amavisd-new spamassassin altermime perl-LDAP perl-Mail-SPF unrar pax lz4 clamav clamav-update clamav-server clamav-server-systemd mlmmj uwsgi-logger-syslog php-pear-Net-IDNA2 python-sqlalchemy python-setuptools python-dns MySQL-python python-jinja2 python-webpy python-netifaces python-pycurl python-requests py-bcrypt uwsgi uwsgi-plugin-python2 fail2ban curl libmnl libuuid lm_sensors nc PyYAML zlib iproute unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch lz4
+ + < DEBUG > Service control: enable rsyslog.
+ + < DEBUG > Service control: enable firewalld.
+ + < DEBUG > Service control: enable postfix.
+ + < DEBUG > Service control: enable mariadb.
+ + < DEBUG > Service control: enable nginx.
+ + < DEBUG > Service control: enable php-fpm.
+ + < DEBUG > Service control: enable dovecot.
+ + < DEBUG > Service control: enable clamd@amavisd.
+ + < DEBUG > Service control: enable amavisd.
+ + < DEBUG > Service control: enable fail2ban.
+ + < DEBUG > Service control: enable crond.
+ + < DEBUG > Service control: disable exim.
+ + < DEBUG > Service control: disable saslauthd.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable clamd.
+ + < DEBUG > Service control: disable spamassassin.
+ + < DEBUG > Service control: disable shorewall.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin.
+Failed to execute operation: No such file or directory
+ + < DEBUG > Service control: disable gamin-python.
+Failed to execute operation: No such file or directory
+< SKIP > Function: after_package_installation.
+< SKIP > Function: generate_ssl_keys.
+[ INFO ] Create required system accounts.
+< SKIP > Function: add_user_vmail.
+< SKIP > Function: add_user_mlmmj.
+< SKIP > Function: add_user_iredadmin.
+< SKIP > Function: add_user_iredapd.
+< SKIP > Function: add_user_netdata.
+< SKIP > Function: web_server_config.
+< SKIP > Function: mysql_setup.
+< SKIP > Function: postfix_setup.
+< SKIP > Function: dovecot_setup.
+< SKIP > Function: mlmmj_config.
+< SKIP > Function: mlmmjadmin_config.
+< SKIP > Function: clamav_config.
+< SKIP > Function: amavisd_config.
+< SKIP > Function: sa_config.
+< SKIP > Function: iredapd_setup.
+< SKIP > Function: iredadmin_setup.
+< SKIP > Function: rcm_setup.
+< SKIP > Function: netdata_setup.
+< SKIP > Function: fail2ban_config.
+< SKIP > Function: cleanup.
